@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2026 R-Matrix.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.favoriteRecipe;
+
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
+import net.minecraft.client.gui.screen.recipebook.RecipeGroupButtonWidget;
+import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.recipe.RecipeDisplayEntry;
+import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.screen.AbstractCraftingScreenHandler;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
+import net.minecraft.util.context.ContextParameterMap;
+import net.minecraft.util.context.ContextType;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELikeClient;
+import xyz.water.rmatrix.cmod.craftguibelike.api.impl.FavoritesManagerImpl;
+import xyz.water.rmatrix.cmod.craftguibelike.utils.SorterManager;
+import xyz.water.rmatrix.cmod.craftguibelike.utils.favoriteMiscUtils.CraftingHandlerAccess;
+
+import java.util.*;
+
+@Mixin(RecipeBookWidget.class)
+public abstract class RecipeBookWidgetMixin {
+
+    @Shadow
+    private @Nullable RecipeGroupButtonWidget currentTab;
+
+    @Shadow @Final
+    private RecipeBookResults recipesArea;
+
+    @Inject(method = "<init>", at = @At("TAIL"))
+    private void setCraftingHandlerFlag(AbstractRecipeScreenHandler craftingScreenHandler, List<RecipeBookWidget.Tab> tabs, CallbackInfo ci){
+        ((CraftingHandlerAccess)this.recipesArea).craftGui_BELike$setCraftingHandlerFlag(
+                craftingScreenHandler instanceof AbstractCraftingScreenHandler
+        );
+    }
+
+    @WrapMethod(method = "refreshResults")
+    private void addToFavoriteCategory(boolean resetCurrentPage, boolean filteringCraftable, Operation<Void> original){
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+
+        if (this.currentTab == null) {
+            original.call(resetCurrentPage, filteringCraftable);
+            return;
+        }
+        if(!this.currentTab.getCategory().equals(CraftGuiBELikeClient.FAVORITE_CATEGORY) || player == null){
+            original.call(resetCurrentPage, filteringCraftable);
+            return;
+        }
+
+        Set<RecipeDisplayEntry> favorites = FavoritesManagerImpl.getINSTANCE().getFavoriteRecipeDisplayEntry(player.getUuid());
+
+        List<RecipeResultCollection> collections = favorites.stream()
+                .map(k -> new RecipeResultCollection(List.of(k)))
+                .sorted(Comparator.comparing(k -> k.getAllRecipes().getFirst().display().result()
+                        .getFirst(new ContextParameterMap.Builder().build(new ContextType.Builder().build()))
+                        .getItem().toString()))
+                .toList();
+        collections = SorterManager.getINSTANCE().sort(collections);
+        RecipeFinder finder = new RecipeFinder();
+        player.getInventory().populateRecipeFinder(finder);
+        for(RecipeResultCollection collection : collections){
+            collection.populateRecipes(finder, recipeDisplay -> true);
+        }
+        this.recipesArea.setResults(collections, resetCurrentPage, filteringCraftable);
+    }
+}
