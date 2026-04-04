@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "package": "xyz.water.rmatrix.cmod.craftguibelike.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ExampleClientMixin",
+    "addNewCategory.AbstractCraftingRecipeBookWidgetMixin",
+    "addNewCategory.RecipeBookWidgetMixin",
+    "favoriteRecipe.AnimatedResultButtonMixin",
+    "favoriteRecipe.ClientRecipeBookAccess",
+    "favoriteRecipe.RecipeBookResultMixin",
+    "favoriteRecipe.RecipeBookWidgetMixin",
+    "sorterAndSortButton.RecipeBookWidgetMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+	}
+}
