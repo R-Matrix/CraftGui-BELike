@@ -24,7 +24,6 @@ package xyz.water.rmatrix.cmod.craftguibelike.api;
 
 import net.minecraft.recipe.NetworkRecipeId;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 

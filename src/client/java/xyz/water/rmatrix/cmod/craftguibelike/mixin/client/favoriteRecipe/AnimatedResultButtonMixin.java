@@ -28,16 +28,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.recipebook.AnimatedResultButton;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.recipe.NetworkRecipeId;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.FavoritesManagerImpl;
 import xyz.water.rmatrix.cmod.craftguibelike.item.ModItem;
 

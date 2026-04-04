@@ -24,14 +24,17 @@ package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.favoriteRecipe;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeGroupButtonWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.recipe.RecipeDisplayEntry;
 import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.screen.AbstractCraftingScreenHandler;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.util.context.ContextParameterMap;
@@ -50,6 +53,7 @@ import xyz.water.rmatrix.cmod.craftguibelike.utils.SorterManager;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.favoriteMiscUtils.CraftingHandlerAccess;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Mixin(RecipeBookWidget.class)
 public abstract class RecipeBookWidgetMixin {
@@ -67,18 +71,13 @@ public abstract class RecipeBookWidgetMixin {
         );
     }
 
-    @WrapMethod(method = "refreshResults")
-    private void addToFavoriteCategory(boolean resetCurrentPage, boolean filteringCraftable, Operation<Void> original){
+    @WrapOperation(method = "refreshResults", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/recipebook/ClientRecipeBook;getResultsForCategory(Lnet/minecraft/recipe/book/RecipeBookGroup;)Ljava/util/List;"))
+    private List<RecipeResultCollection> mi(ClientRecipeBook instance, RecipeBookGroup category, Operation<List<RecipeResultCollection>> original){
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
-
-        if (this.currentTab == null) {
-            original.call(resetCurrentPage, filteringCraftable);
-            return;
-        }
-        if(!this.currentTab.getCategory().equals(CraftGuiBELikeClient.FAVORITE_CATEGORY) || player == null){
-            original.call(resetCurrentPage, filteringCraftable);
-            return;
-        }
+        if (this.currentTab == null) return original.call(instance, category);
+        if (!this.currentTab.getCategory().equals(CraftGuiBELikeClient.FAVORITE_CATEGORY) || player == null)
+            return original.call(instance, category);
 
         Set<RecipeDisplayEntry> favorites = FavoritesManagerImpl.getINSTANCE().getFavoriteRecipeDisplayEntry(player.getUuid());
 
@@ -86,14 +85,18 @@ public abstract class RecipeBookWidgetMixin {
                 .map(k -> new RecipeResultCollection(List.of(k)))
                 .sorted(Comparator.comparing(k -> k.getAllRecipes().getFirst().display().result()
                         .getFirst(new ContextParameterMap.Builder().build(new ContextType.Builder().build()))
-                        .getItem().toString()))
-                .toList();
+                        .getItem().toString())
+                ).collect(Collectors.toList());
+
         collections = SorterManager.getINSTANCE().sort(collections);
+
         RecipeFinder finder = new RecipeFinder();
         player.getInventory().populateRecipeFinder(finder);
+
         for(RecipeResultCollection collection : collections){
             collection.populateRecipes(finder, recipeDisplay -> true);
         }
-        this.recipesArea.setResults(collections, resetCurrentPage, filteringCraftable);
+
+        return collections;
     }
 }
