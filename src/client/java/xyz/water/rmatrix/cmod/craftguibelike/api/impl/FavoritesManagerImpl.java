@@ -81,4 +81,11 @@ public class FavoritesManagerImpl implements IFavoritesManager {
         storage.getFavorites(playerId).clear();
         storage.save();
     }
+
+    public void clearFavoritesAll(){
+        for (UUID player : storage.getAllPlayer()){
+            storage.getFavorites(player).clear();
+        }
+        storage.save();
+    }
 }

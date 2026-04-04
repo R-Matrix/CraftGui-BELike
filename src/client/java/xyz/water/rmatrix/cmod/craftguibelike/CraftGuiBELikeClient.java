@@ -1,9 +1,11 @@
 package xyz.water.rmatrix.cmod.craftguibelike;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.util.Identifier;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
+import xyz.water.rmatrix.cmod.craftguibelike.command.ClearFavoriteCommand;
 import xyz.water.rmatrix.cmod.craftguibelike.item.ModItem;
 
 public class CraftGuiBELikeClient implements ClientModInitializer {
@@ -17,5 +19,6 @@ public class CraftGuiBELikeClient implements ClientModInitializer {
 		EnhancedRecipeBookCategoryAPIImpl api = EnhancedRecipeBookCategoryAPIImpl.getINSTANCE();
 		FAVORITE_CATEGORY = api.registerCategory(FAVORITE_CATEGORY_ID, ModItem.FAVORITE_STAR);
 
+		ClientCommandRegistrationCallback.EVENT.register(new ClearFavoriteCommand());
 	}
 }

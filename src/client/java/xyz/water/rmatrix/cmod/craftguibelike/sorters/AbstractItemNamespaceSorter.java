@@ -25,13 +25,11 @@ package xyz.water.rmatrix.cmod.craftguibelike.sorters;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeDisplayEntry;
-import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.util.context.ContextParameterMap;
 import net.minecraft.util.context.ContextType;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeSorter;
 
 import java.util.List;
-import java.util.UUID;
 
 public abstract class AbstractItemNamespaceSorter implements IRecipeSorter {
     @Override

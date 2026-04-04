@@ -124,4 +124,8 @@ public class FavoriteRecipeStorage {
     public boolean isFavorite(UUID playerId, Integer recipes){
         return getFavorites(playerId).contains(recipes);
     }
+
+    public Set<UUID> getAllPlayer(){
+        return playersFavorites.keySet();
+    }
 }
