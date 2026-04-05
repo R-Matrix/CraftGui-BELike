@@ -20,20 +20,25 @@
  * SOFTWARE.
  */
 
-package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.favoriteRecipe;
+package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.mouseScollOnRecipeBool;
 
-import net.minecraft.client.recipebook.ClientRecipeBook;
-import net.minecraft.recipe.NetworkRecipeId;
-import net.minecraft.recipe.RecipeDisplayEntry;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
 
-import java.util.Map;
+@Mixin(HandledScreen.class)
+public abstract class HandledScreenHokeMixin extends Screen{
 
-@Mixin(ClientRecipeBook.class)
-public interface ClientRecipeBookAccess {
+    protected HandledScreenHokeMixin(Text title) {
+        super(title);
+    }
 
-    @Accessor("recipes")
-    Map<NetworkRecipeId, RecipeDisplayEntry> craftGui_BELike$getAllRecipes();
+    @WrapMethod(method = "mouseScrolled")
+    protected boolean mouseScrolledHoke(double mouseX, double mouseY, double horizontalAmount, double verticalAmount, Operation<Boolean> original){
 
+        return original.call(mouseX, mouseY, horizontalAmount, verticalAmount);
+    }
 }

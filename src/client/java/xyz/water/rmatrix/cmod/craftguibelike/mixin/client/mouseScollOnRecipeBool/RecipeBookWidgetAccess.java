@@ -20,20 +20,24 @@
  * SOFTWARE.
  */
 
-package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.favoriteRecipe;
+package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.mouseScollOnRecipeBool;
 
-import net.minecraft.client.recipebook.ClientRecipeBook;
-import net.minecraft.recipe.NetworkRecipeId;
-import net.minecraft.recipe.RecipeDisplayEntry;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-import java.util.Map;
+@Mixin(RecipeBookWidget.class)
+public interface RecipeBookWidgetAccess {
 
-@Mixin(ClientRecipeBook.class)
-public interface ClientRecipeBookAccess {
+    @Invoker("getLeft")
+    int craftGui_BELike$getLeft();
 
-    @Accessor("recipes")
-    Map<NetworkRecipeId, RecipeDisplayEntry> craftGui_BELike$getAllRecipes();
+    @Invoker("getTop")
+    int craftGui_BELike$getTop();
+
+    @Accessor("recipesArea")
+    RecipeBookResults craftGui_BELike$getRecipesArea();
 
 }
