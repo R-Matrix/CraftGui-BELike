@@ -62,7 +62,7 @@ public class FavoritesManagerImpl implements IFavoritesManager {
     public Set<NetworkRecipeId> getFavorites(UUID playerId) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return Set.of();
-        return ((ClientRecipeBookAccess)player.getRecipeBook()).getAllRecipes().keySet().stream()
+        return ((ClientRecipeBookAccess)player.getRecipeBook()).craftGui_BELike$getAllRecipes().keySet().stream()
                 .filter(k -> isFavorited(playerId, k))
                 .collect(Collectors.toSet());
     }
@@ -70,7 +70,7 @@ public class FavoritesManagerImpl implements IFavoritesManager {
     public Set<RecipeDisplayEntry> getFavoriteRecipeDisplayEntry(UUID playerId){
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if(player == null) return Set.of();
-        return  ((ClientRecipeBookAccess)player.getRecipeBook()).getAllRecipes().entrySet().stream()
+        return  ((ClientRecipeBookAccess)player.getRecipeBook()).craftGui_BELike$getAllRecipes().entrySet().stream()
                 .filter(k -> isFavorited(playerId ,k.getKey()))
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toSet());

@@ -24,7 +24,6 @@ package xyz.water.rmatrix.cmod.craftguibelike.utils;
 
 import com.google.gson.*;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.recipe.NetworkRecipeId;
 import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike;
 
 import java.nio.file.Files;

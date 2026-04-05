@@ -10,6 +10,11 @@
     "favoriteRecipe.ClientRecipeBookAccess",
     "favoriteRecipe.RecipeBookResultMixin",
     "favoriteRecipe.RecipeBookWidgetMixin",
+    "mouseScollOnRecipeBool.HandledScreenHokeMixin",
+    "mouseScollOnRecipeBool.RecipeBookResultAccess",
+    "mouseScollOnRecipeBool.RecipeBookScreenMixin",
+    "mouseScollOnRecipeBool.RecipeBookWidgetAccess",
+    "sorterAndSortButton.RecipeBookResultMixin",
     "sorterAndSortButton.RecipeBookWidgetMixin"
   ],
   "injectors": {
