@@ -28,35 +28,49 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
-import net.minecraft.client.gui.screen.recipebook.RecipeGroupButtonWidget;
-import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.client.gui.widget.ToggleButtonWidget;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xyz.water.rmatrix.cmod.craftguibelike.button.SortButton;
-import xyz.water.rmatrix.cmod.craftguibelike.utils.SorterManager;
 
-import java.util.List;
+@Mixin(RecipeBookResults.class)
+public abstract class RecipeBookResultMixin {
 
-@Mixin(RecipeBookWidget.class)
-public abstract class RecipeBookWidgetMixin {
+    @Shadow @Final
+    private RecipeBookWidget<?> recipeBookWidget;
+    @Unique
+    private SortButton sortButton;
 
     @Shadow
-    private @Nullable RecipeGroupButtonWidget currentTab;
+    public abstract void draw(DrawContext context, int x, int y, int mouseX, int mouseY, float delta);
 
-    @WrapOperation(method = "refreshResults", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/recipebook/RecipeBookResults;setResults(Ljava/util/List;ZZ)V"))
-    private void sortRecipes(RecipeBookResults instance, List<RecipeResultCollection> resultCollections, boolean resetCurrentPage, boolean filteringCraftable, Operation<Void> original) {
+    @Inject(method = "initialize", at = @At("TAIL"))
+    private void se(MinecraftClient client, int parentLeft, int parentTop, CallbackInfo ci){
+        if (this.sortButton == null)
+            this.sortButton = new SortButton(this.recipeBookWidget ,parentLeft + 10, parentTop + 137);
+    }
 
-        List<RecipeResultCollection> sortList = resultCollections;
+    @WrapOperation(method = "draw", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ToggleButtonWidget;render(Lnet/minecraft/client/gui/DrawContext;IIF)V", ordinal = 0))
+    private void er(ToggleButtonWidget instance, DrawContext drawContext, int mouseX, int mouseY, float delta, Operation<Void> original){
+        if(sortButton != null) {
+            sortButton.visible = recipeBookWidget.isOpen();
+            this.sortButton.render(drawContext, mouseX, mouseY, delta);
+        }
+        original.call(instance, drawContext, mouseX, mouseY, delta);
+    }
 
-        if (this.currentTab != null) sortList = SorterManager.getINSTANCE().sort(sortList);
+    @WrapOperation(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ToggleButtonWidget;mouseClicked(DDI)Z", ordinal = 0))
+    private boolean se(ToggleButtonWidget instance, double mouseX, double mouseY, int button, Operation<Boolean> original){
 
-        original.call(instance, sortList, resetCurrentPage, filteringCraftable);
+        if(this.sortButton.mouseClicked(mouseX, mouseY, button)){
+            return false;
+        }
+        return original.call(instance, mouseX, mouseY, button);
     }
 
 }

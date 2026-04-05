@@ -22,20 +22,23 @@
 
 package xyz.water.rmatrix.cmod.craftguibelike.button;
 
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
+import xyz.water.rmatrix.cmod.craftguibelike.mixin.client.sorterAndSortButton.RecipeBookWidgetMixin;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.SorterManager;
 
 public class SortButton extends ButtonWidget {
 
 
-    public SortButton(int x, int y, int width, int height) {
-        super(x, y, width, height,
-                Text.literal("↹"),
-    button -> {
+    public SortButton(RecipeBookWidget<?> parent, int x, int y) {
+        super(x, y, 10, 10,
+                Text.literal("s"),      //候选图标: ↹
+                button -> {
                     SorterManager.getINSTANCE().cycleCurrentSorter();
                     button.setTooltip(Tooltip.of(getTooltipText()));
+                    parent.refresh();
                 },
                 ButtonWidget.DEFAULT_NARRATION_SUPPLIER);
 
