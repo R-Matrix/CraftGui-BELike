@@ -5,5 +5,6 @@
   "craftgui-belike.register_order_sort": "注册表顺序",
   "craftgui-belike.vanilla_first_sort": "原版物品优先",
   "craftgui-belike.mod_first_sort": "模组物品优先",
-  "craftgui-belike.pinyin_sort": "拼音顺序"
+  "craftgui-belike.pinyin_sort": "拼音顺序",
+  "craftgui-belike.mouse_scroll.current": "允许滚轮翻页:"
 }

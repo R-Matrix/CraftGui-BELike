@@ -30,6 +30,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import xyz.water.rmatrix.cmod.craftguibelike.button.MouseScrollEnableButton;
 
 @Mixin(RecipeBookScreen.class)
 public abstract class RecipeBookScreenMixin extends HandledScreenHokeMixin{
@@ -46,7 +47,7 @@ public abstract class RecipeBookScreenMixin extends HandledScreenHokeMixin{
     protected boolean mouseScrolledHoke(double mouseX, double mouseY, double horizontalAmount, double verticalAmount, Operation<Boolean> original){
 
         if(recipeBook != null && recipeBook.isOpen()){
-            if(isOnWeight(mouseX, mouseY, this.recipeBook)){
+            if(MouseScrollEnableButton.isEnableMouseScroll() && isOnWeight(mouseX, mouseY, this.recipeBook)){
                 RecipeBookResultAccess recipeBookResultAccess = (RecipeBookResultAccess) ((RecipeBookWidgetAccess) recipeBook).craftGui_BELike$getRecipesArea();
                 int currentpage = recipeBookResultAccess.craftGui_BELike$getCurrentPage();
                 int pageCount = recipeBookResultAccess.craftGui_BELike$getPageCount();

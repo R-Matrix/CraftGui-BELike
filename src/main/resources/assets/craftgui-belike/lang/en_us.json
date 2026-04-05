@@ -5,5 +5,6 @@
   "craftgui-belike.register_order_sort" : "register_order_sort",
   "craftgui-belike.vanilla_first_sort": "vanilla_first_sort",
   "craftgui-belike.mod_first_sort" : "mod_first_sort",
-  "craftgui-belike.pinyin_sort" : "pinyin_sort"
+  "craftgui-belike.pinyin_sort" : "pinyin_sort",
+  "craftgui-belike.mouse_scroll.current" : "mouseScrollEnable:"
 }

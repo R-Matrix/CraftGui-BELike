@@ -22,34 +22,34 @@
 
 package xyz.water.rmatrix.cmod.craftguibelike.button;
 
-import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
-import xyz.water.rmatrix.cmod.craftguibelike.mixin.client.sorterAndSortButton.RecipeBookWidgetMixin;
-import xyz.water.rmatrix.cmod.craftguibelike.utils.SorterManager;
 
-public class SortButton extends ButtonWidget {
+public class MouseScrollEnableButton extends ButtonWidget {
+
+    private static boolean enableMouseScroll = true;
 
 
-    public SortButton(RecipeBookWidget<?> parent, int x, int y) {
+    public MouseScrollEnableButton(int x, int y) {
         super(x, y, 10, 10,
-                Text.literal("z"),      //候选图标: ↹
+                Text.literal("s"),
                 button -> {
-                    SorterManager.getINSTANCE().cycleCurrentSorter();
+                    enableMouseScroll = !enableMouseScroll;
                     button.setTooltip(Tooltip.of(getTooltipText()));
-                    parent.refresh();
                 },
                 ButtonWidget.DEFAULT_NARRATION_SUPPLIER);
+        this.setTooltip(Tooltip.of(getTooltipText()));
+    }
 
-        this.setTooltip(Tooltip.of(Text.translatable("craftgui-belike.sort.current").append(
-                Text.translatable(SorterManager.getINSTANCE().getCurrentSorter().getName())
-        )));
+
+    public static boolean isEnableMouseScroll() {
+        return enableMouseScroll;
     }
 
     private static Text getTooltipText() {
-        return Text.translatable("craftgui-belike.sort.current").append(
-                Text.translatable(SorterManager.getINSTANCE().getCurrentSorter().getName())
+        return Text.translatable("craftgui-belike.mouse_scroll.current").append(
+                Text.literal(enableMouseScroll ? " §a✓" : " §c✗")
         );
     }
 }

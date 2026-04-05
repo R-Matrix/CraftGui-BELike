@@ -12,6 +12,7 @@
     "favoriteRecipe.RecipeBookWidgetMixin",
     "mouseScollOnRecipeBool.HandledScreenHokeMixin",
     "mouseScollOnRecipeBool.RecipeBookResultAccess",
+    "mouseScollOnRecipeBool.RecipeBookResultMixin",
     "mouseScollOnRecipeBool.RecipeBookScreenMixin",
     "mouseScollOnRecipeBool.RecipeBookWidgetAccess",
     "sorterAndSortButton.RecipeBookResultMixin",
