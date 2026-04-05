@@ -46,17 +46,14 @@ public abstract class RecipeBookResultMixin {
     @Unique
     private SortButton sortButton;
 
-    @Shadow
-    public abstract void draw(DrawContext context, int x, int y, int mouseX, int mouseY, float delta);
-
     @Inject(method = "initialize", at = @At("TAIL"))
-    private void se(MinecraftClient client, int parentLeft, int parentTop, CallbackInfo ci){
+    private void addSortButton(MinecraftClient client, int parentLeft, int parentTop, CallbackInfo ci){
         if (this.sortButton == null)
             this.sortButton = new SortButton(this.recipeBookWidget ,parentLeft + 10, parentTop + 137);
     }
 
     @WrapOperation(method = "draw", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ToggleButtonWidget;render(Lnet/minecraft/client/gui/DrawContext;IIF)V", ordinal = 0))
-    private void er(ToggleButtonWidget instance, DrawContext drawContext, int mouseX, int mouseY, float delta, Operation<Void> original){
+    private void drawSortButton(ToggleButtonWidget instance, DrawContext drawContext, int mouseX, int mouseY, float delta, Operation<Void> original){
         if(sortButton != null) {
             sortButton.visible = recipeBookWidget.isOpen();
             this.sortButton.render(drawContext, mouseX, mouseY, delta);
@@ -65,7 +62,7 @@ public abstract class RecipeBookResultMixin {
     }
 
     @WrapOperation(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ToggleButtonWidget;mouseClicked(DDI)Z", ordinal = 0))
-    private boolean se(ToggleButtonWidget instance, double mouseX, double mouseY, int button, Operation<Boolean> original){
+    private boolean onClickSortButton(ToggleButtonWidget instance, double mouseX, double mouseY, int button, Operation<Boolean> original){
 
         if(this.sortButton.mouseClicked(mouseX, mouseY, button)){
             return false;

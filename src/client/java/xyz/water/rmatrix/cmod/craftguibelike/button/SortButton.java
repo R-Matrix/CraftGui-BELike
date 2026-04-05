@@ -26,7 +26,6 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
-import xyz.water.rmatrix.cmod.craftguibelike.mixin.client.sorterAndSortButton.RecipeBookWidgetMixin;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.SorterManager;
 
 public class SortButton extends ButtonWidget {
