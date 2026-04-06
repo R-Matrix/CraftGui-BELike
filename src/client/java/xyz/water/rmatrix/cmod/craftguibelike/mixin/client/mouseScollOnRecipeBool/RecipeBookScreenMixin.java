@@ -23,9 +23,12 @@
 package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.mouseScollOnRecipeBool;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.RecipeBookScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,14 +52,21 @@ public abstract class RecipeBookScreenMixin extends HandledScreenHokeMixin{
         if(recipeBook != null && recipeBook.isOpen()){
             if(MouseScrollEnableButton.isEnableMouseScroll() && isOnWeight(mouseX, mouseY, this.recipeBook)){
                 RecipeBookResultAccess recipeBookResultAccess = (RecipeBookResultAccess) ((RecipeBookWidgetAccess) recipeBook).craftGui_BELike$getRecipesArea();
+
+                int pageAmount = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_CONTROL) ? 5 : 1;
+
                 int currentpage = recipeBookResultAccess.craftGui_BELike$getCurrentPage();
                 int pageCount = recipeBookResultAccess.craftGui_BELike$getPageCount();
-                if(pageCount > 1 && currentpage < pageCount - 1 && verticalAmount < 0){
-                    recipeBookResultAccess.craftGui_BELike$setCurrentPage(currentpage + 1);
+
+                if(verticalAmount < 0){
+                    int goalPage = Math.min(pageCount - 1, currentpage + pageAmount);
+                    recipeBookResultAccess.craftGui_BELike$setCurrentPage(goalPage);
                 }
-                else if(pageCount > 1 && currentpage >0 && verticalAmount > 0){
-                    recipeBookResultAccess.craftGui_BELike$setCurrentPage(currentpage - 1);
+                else if(verticalAmount > 0){
+                    int goalPage = Math.max(0, currentpage - pageAmount);
+                    recipeBookResultAccess.craftGui_BELike$setCurrentPage(goalPage);
                 }
+
                 recipeBook.refresh();
             }
         }

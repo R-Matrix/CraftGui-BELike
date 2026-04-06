@@ -27,7 +27,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.AnimatedResultButton;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.recipe.NetworkRecipeId;
+import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -59,7 +61,7 @@ public abstract class RecipeBookResultMixin implements CraftingHandlerAccess {
         boolean bl = original.call(instance, mouseX, mouseY, button);
         if(!this.isCraftingHandler) return bl;
 
-        if(bl && button == 2){
+        if(bl && button == 0 && InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F)){
             NetworkRecipeId recipeId = instance.getCurrentId();
 
             if(recipeId == null || this.client.player == null) return true;

@@ -6,6 +6,7 @@
     "ExampleClientMixin",
     "addNewCategory.AbstractCraftingRecipeBookWidgetMixin",
     "addNewCategory.RecipeBookWidgetMixin",
+    "cancleRecipeGroup.ClientRecipeBookMixin",
     "favoriteRecipe.AnimatedResultButtonMixin",
     "favoriteRecipe.ClientRecipeBookAccess",
     "favoriteRecipe.RecipeBookResultMixin",
