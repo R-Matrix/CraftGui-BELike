@@ -23,7 +23,7 @@
 		]
 	},
 	"providers": [
-		"enhanced-recipebook-category-api"
+		"xyz.water.rmatrix.cmod.craftguibelike.IEnhancedRecipebookCategoryApi"
 	],
 	"mixins": [
 		"craftgui-belike.mixins.json",

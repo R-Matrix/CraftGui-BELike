@@ -34,7 +34,7 @@ import java.util.OptionalInt;
 public abstract class ClientRecipeBookMixin {
 
     @WrapOperation(method = "toGroupedMap", at = @At(value = "INVOKE", target = "Ljava/util/OptionalInt;isEmpty()Z"))
-    private static boolean se(OptionalInt instance, Operation<Boolean> original){
+    private static boolean se(OptionalInt optionalInt, Operation<Boolean> original){
 
         return true;
     }

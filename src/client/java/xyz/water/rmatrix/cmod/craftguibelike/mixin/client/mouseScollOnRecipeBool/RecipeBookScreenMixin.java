@@ -58,6 +58,8 @@ public abstract class RecipeBookScreenMixin extends HandledScreenHokeMixin{
                 int currentpage = recipeBookResultAccess.craftGui_BELike$getCurrentPage();
                 int pageCount = recipeBookResultAccess.craftGui_BELike$getPageCount();
 
+                if(pageCount == 0) return super.mouseScrolledHoke(mouseX, mouseY, horizontalAmount, verticalAmount, original);
+
                 if(verticalAmount < 0){
                     int goalPage = Math.min(pageCount - 1, currentpage + pageAmount);
                     recipeBookResultAccess.craftGui_BELike$setCurrentPage(goalPage);

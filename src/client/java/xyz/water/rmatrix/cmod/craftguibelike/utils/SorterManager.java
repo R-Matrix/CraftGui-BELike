@@ -58,6 +58,7 @@ public class SorterManager {
         register(my_modid, new VanillaFirstSorter());
         register(my_modid, new ModFirstSorter());
         register(my_modid, new PinYinSorter());
+        register(my_modid, new ContainGroupSorter());
         if(currentSorter == null) currentSorter = sorter;
     }
 
