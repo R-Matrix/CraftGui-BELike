@@ -28,7 +28,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.SorterManager;
 
-public class SortButton extends ButtonWidget {
+public class SortButton extends AbstractMyRecipeBookResultButton {
 
 
     public SortButton(RecipeBookWidget<?> parent, int x, int y) {

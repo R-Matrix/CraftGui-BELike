@@ -24,6 +24,7 @@ package xyz.water.rmatrix.cmod.craftguibelike.sorters;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.recipe.RecipeDisplayEntry;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.util.context.ContextParameterMap;
@@ -31,7 +32,6 @@ import net.minecraft.util.context.ContextType;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeSorter;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ContainGroupSorter implements IRecipeSorter {
 
@@ -43,99 +43,52 @@ public class ContainGroupSorter implements IRecipeSorter {
     @Override
     public List<RecipeResultCollection> sortRecipes(List<RecipeResultCollection> recipes) {
 
-        if(MinecraftClient.getInstance().player == null) return recipes;
-        // 1. 展开所有配方，记录组信息
-        List<RecipeWithGroup> allRecipes = new ArrayList<>();
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+
+        if (player == null || recipes.isEmpty()) return recipes;
+
         RecipeFinder finder = new RecipeFinder();
-        MinecraftClient.getInstance().player.getInventory().populateRecipeFinder(finder);
+        player.getInventory().populateRecipeFinder(finder);
+
+        Map<Integer, List<RecipeDisplayEntry>> groups = new LinkedHashMap<>();
+        List<Integer> groupOrder = new ArrayList<>();
 
         for (RecipeResultCollection collection : recipes) {
             for (RecipeDisplayEntry recipe : collection.getAllRecipes()) {
-                allRecipes.add(new RecipeWithGroup(recipe, collection));
+                int groupId = getGroupId(recipe, collection);
+                groups.computeIfAbsent(groupId, g -> {
+                    groupOrder.add(g);
+                    return new ArrayList<>();
+                }).add(recipe);
             }
         }
 
-        // 2. 按组分类
-        Map<Integer, List<RecipeWithGroup>> groups = new LinkedHashMap<>();
-        List<Integer> groupOrder = new ArrayList<>();
-
-        for (RecipeWithGroup recipeWithGroup : allRecipes) {
-            int groupId = recipeWithGroup.getGroupId();
-
-            groups.computeIfAbsent(groupId, g -> {
-                groupOrder.add(g);
-                return new ArrayList<>();
-            }).add(recipeWithGroup);
-        }
-
-        // 3. 组内按拼音排序
-        for (List<RecipeWithGroup> groupList : groups.values()) {
-            groupList.sort((a, b) -> {
-                String nameA = a.getRecipeName();
-                String nameB = b.getRecipeName();
-                return nameA.compareTo(nameB);
-            });
-        }
-
-        // 4. 重新构建 RecipeResultCollection
         List<RecipeResultCollection> result = new ArrayList<>();
 
         for (Integer groupId : groupOrder) {
-            List<RecipeWithGroup> groupList = groups.get(groupId);
+            List<RecipeDisplayEntry> groupRecipes = groups.get(groupId);
 
-            // 如果这个组原来就是折叠的（多个配方）
-            if (groupList.size() > 1) {
-                // 创建一个包含所有配方的集合
-                List<RecipeDisplayEntry> recipesInGroup = groupList.stream()
-                        .map(RecipeWithGroup::recipe)
-                        .toList();
+            groupRecipes.sort(Comparator.comparing(this::getRecipeName));
 
-                for(RecipeDisplayEntry entry : recipesInGroup) {
-                    RecipeResultCollection collection1 = new RecipeResultCollection(List.of(entry));
-                    collection1.populateRecipes(finder, recipeDisplay -> true);
-                    result.add(collection1);
-                }
-
-            } else {
-                // 单个配方
-                RecipeDisplayEntry recipe = groupList.getFirst().recipe();
-                RecipeResultCollection collection1 = new RecipeResultCollection(List.of(recipe));
-                collection1.populateRecipes(finder, recipeDisplay -> true);
-                result.add(collection1);
+            for(RecipeDisplayEntry entry : groupRecipes) {
+                RecipeResultCollection newCollection = new RecipeResultCollection(List.of(entry));
+                newCollection.populateRecipes(finder, recipeDisplay -> true);
+                result.add(newCollection);
             }
-
-
         }
 
         return result;
     }
 
-    private String getFirstRecipeName(RecipeResultCollection collection) {
-        RecipeDisplayEntry first = collection.getAllRecipes().getFirst();
-        return first.display().result().getFirst(new ContextParameterMap.Builder().build(new ContextType.Builder().build())).getItem().getName().getString();
+    private int getGroupId(RecipeDisplayEntry recipe, RecipeResultCollection collection) {
+
+        OptionalInt group = recipe.group();
+        return group.orElse(collection.hashCode());
     }
 
-    // 辅助类：记录配方和它的组信息
-    private record RecipeWithGroup(RecipeDisplayEntry recipe, RecipeResultCollection originalCollection) {
+    private String getRecipeName(RecipeDisplayEntry recipe) {
 
-        public int getGroupId() {
-            // 优先使用配方的组号
-            OptionalInt group = recipe.group();
-            if (group.isPresent()) {
-                return group.getAsInt();
-            }
-
-            // 如果没有组，用原集合的hash作为组号
-            return originalCollection.hashCode();
-        }
-
-        public String getRecipeName() {
-            return recipe.display().result().getFirst(new ContextParameterMap.Builder().build(new ContextType.Builder().build())).getItem().getName().getString();
-        }
+        return recipe.getStacks(new ContextParameterMap.Builder().build(new ContextType.Builder().build()))
+                .getFirst().getItem().getName().getString();
     }
-
-//    RecipeFinder finder = new RecipeFinder();
-//            MinecraftClient.getInstance().player.getInventory().populateRecipeFinder(finder);
-//            collection1.populateRecipes(finder, recipeDisplay -> true);
-//            originalOrder.add(collection1);
 }

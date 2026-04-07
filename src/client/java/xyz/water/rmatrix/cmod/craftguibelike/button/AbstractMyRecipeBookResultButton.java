@@ -20,22 +20,14 @@
  * SOFTWARE.
  */
 
-package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.cancleRecipeGroup;
+package xyz.water.rmatrix.cmod.craftguibelike.button;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.client.recipebook.ClientRecipeBook;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.text.Text;
 
-import java.util.OptionalInt;
+public abstract class AbstractMyRecipeBookResultButton extends ButtonWidget {
 
-@Mixin(ClientRecipeBook.class)
-public abstract class ClientRecipeBookMixin {
-
-    @WrapOperation(method = "toGroupedMap", at = @At(value = "INVOKE", target = "Ljava/util/OptionalInt;isEmpty()Z"))
-    private static boolean se(OptionalInt optionalInt, Operation<Boolean> original){
-
-        return true;
+    protected AbstractMyRecipeBookResultButton(int x, int y, int width, int height, Text message, PressAction onPress, NarrationSupplier narrationSupplier) {
+        super(x, y, width, height, message, onPress, narrationSupplier);
     }
 }

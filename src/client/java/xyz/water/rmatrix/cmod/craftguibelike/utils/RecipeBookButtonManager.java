@@ -1,0 +1,72 @@
+/*
+ * Copyright (c) 2026 R-Matrix.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package xyz.water.rmatrix.cmod.craftguibelike.utils;
+
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
+import xyz.water.rmatrix.cmod.craftguibelike.button.AbstractMyRecipeBookResultButton;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class RecipeBookButtonManager {
+
+    private static RecipeBookButtonManager INSTANCE;
+    private List<AbstractMyRecipeBookResultButton> buttonList = new ArrayList<>();
+
+    public static RecipeBookButtonManager getINSTANCE(){
+        if(INSTANCE == null) INSTANCE = new RecipeBookButtonManager();
+        return INSTANCE;
+    }
+
+    public void clearButtons(){
+        buttonList.clear();
+    }
+
+    public void addButton(AbstractMyRecipeBookResultButton button){
+        buttonList.add(button);
+    }
+
+    public void resetWith(AbstractMyRecipeBookResultButton ... button){
+        clearButtons();
+        for(AbstractMyRecipeBookResultButton button1 : button){
+            addButton(button1);
+        }
+    }
+
+    public void drawButtons(DrawContext drawContext, int mouseX, int mouseY, float delta, RecipeBookWidget<?> recipeBookWidget){
+        for(AbstractMyRecipeBookResultButton btn : buttonList){
+            btn.visible = recipeBookWidget.isOpen();
+            btn.render(drawContext, mouseX, mouseY, delta);
+        }
+    }
+
+    public boolean onButtonsClick(double mouseX, double mouseY, int button){
+        for(AbstractMyRecipeBookResultButton btn : buttonList){
+            if(btn.visible){
+                if(btn.mouseClicked(mouseX, mouseY, button)) return true;
+            }
+        }
+        return false;
+    }
+}

@@ -10,7 +10,7 @@ import xyz.water.rmatrix.cmod.craftguibelike.item.ModItem;
 
 public class CraftGuiBELikeClient implements ClientModInitializer {
 
-	public static final Identifier FAVORITE_CATEGORY_ID = Identifier.of("testmod", "special_re");
+	public static final Identifier FAVORITE_CATEGORY_ID = Identifier.of(CraftGuiBELike.MOD_ID, "favorite_category");
 	public static RecipeBookCategory FAVORITE_CATEGORY;
 
 	@Override

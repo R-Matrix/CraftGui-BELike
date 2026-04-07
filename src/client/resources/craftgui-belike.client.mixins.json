@@ -6,17 +6,15 @@
     "ExampleClientMixin",
     "addNewCategory.AbstractCraftingRecipeBookWidgetMixin",
     "addNewCategory.RecipeBookWidgetMixin",
-    "cancleRecipeGroup.ClientRecipeBookMixin",
+    "buttonsAddToRecipeBookResult.RecipeBookResultMixin",
     "favoriteRecipe.AnimatedResultButtonMixin",
     "favoriteRecipe.ClientRecipeBookAccess",
     "favoriteRecipe.RecipeBookResultMixin",
     "favoriteRecipe.RecipeBookWidgetMixin",
     "mouseScollOnRecipeBool.HandledScreenHokeMixin",
     "mouseScollOnRecipeBool.RecipeBookResultAccess",
-    "mouseScollOnRecipeBool.RecipeBookResultMixin",
     "mouseScollOnRecipeBool.RecipeBookScreenMixin",
     "mouseScollOnRecipeBool.RecipeBookWidgetAccess",
-    "sorterAndSortButton.RecipeBookResultMixin",
     "sorterAndSortButton.RecipeBookWidgetMixin"
   ],
   "injectors": {

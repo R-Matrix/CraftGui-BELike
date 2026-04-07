@@ -26,7 +26,7 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
-public class MouseScrollEnableButton extends ButtonWidget {
+public class MouseScrollEnableButton extends AbstractMyRecipeBookResultButton {
 
     private static boolean enableMouseScroll = true;
 

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.mouseScollOnRecipeBool;
+package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.buttonsAddToRecipeBookResult;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -37,37 +37,35 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.water.rmatrix.cmod.craftguibelike.button.MouseScrollEnableButton;
+import xyz.water.rmatrix.cmod.craftguibelike.button.SortButton;
+import xyz.water.rmatrix.cmod.craftguibelike.utils.RecipeBookButtonManager;
 
 @Mixin(RecipeBookResults.class)
 public abstract class RecipeBookResultMixin {
 
+    @Unique
+    private final RecipeBookButtonManager recipeBookButtonManager = RecipeBookButtonManager.getINSTANCE();
     @Shadow @Final
     private RecipeBookWidget<?> recipeBookWidget;
 
-    @Unique
-    private MouseScrollEnableButton mouseScrollEnableButton;
-
     @Inject(method = "initialize", at = @At("TAIL"))
-    private void addMouseScrollEnableButton(MinecraftClient client, int parentLeft, int parentTop, CallbackInfo ci){
-        if (this.mouseScrollEnableButton == null)
-            this.mouseScrollEnableButton = new MouseScrollEnableButton(parentLeft + 20, parentTop + 137);
+    private void addSortButton(MinecraftClient client, int parentLeft, int parentTop, CallbackInfo ci){
+        recipeBookButtonManager.resetWith(
+                new SortButton(this.recipeBookWidget ,parentLeft + 10, parentTop + 137),
+                new MouseScrollEnableButton(parentLeft + 20, parentTop + 137)
+        );
     }
 
     @WrapOperation(method = "draw", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ToggleButtonWidget;render(Lnet/minecraft/client/gui/DrawContext;IIF)V", ordinal = 0))
-    private void drawMouseScrollEnableButton(ToggleButtonWidget instance, DrawContext drawContext, int mouseX, int mouseY, float delta, Operation<Void> original){
-        if(mouseScrollEnableButton != null) {
-            mouseScrollEnableButton.visible = recipeBookWidget.isOpen();
-            this.mouseScrollEnableButton.render(drawContext, mouseX, mouseY, delta);
-        }
+    private void drawSortButton(ToggleButtonWidget instance, DrawContext drawContext, int mouseX, int mouseY, float delta, Operation<Void> original){
+
+        recipeBookButtonManager.drawButtons(drawContext, mouseX, mouseY, delta, recipeBookWidget);
         original.call(instance, drawContext, mouseX, mouseY, delta);
     }
 
     @WrapOperation(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ToggleButtonWidget;mouseClicked(DDI)Z", ordinal = 0))
-    private boolean onClickMouseScrollEnableButton(ToggleButtonWidget instance, double mouseX, double mouseY, int button, Operation<Boolean> original){
-
-        if(this.mouseScrollEnableButton.mouseClicked(mouseX, mouseY, button)){
-            return false;
-        }
+    private boolean onClickSortButton(ToggleButtonWidget instance, double mouseX, double mouseY, int button, Operation<Boolean> original){
+        if(recipeBookButtonManager.onButtonsClick(mouseX, mouseY, button)) return false;
         return original.call(instance, mouseX, mouseY, button);
     }
 
