@@ -32,9 +32,7 @@ public class CraftGuiBELikeClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(RecipeCategoryS2CPayLoad.ID,
 				(payload, context) -> {
 					Map<Identifier, Identifier> map = payload.categoryMapping();
-					context.client().execute(() -> {
-						System.out.println("Received " + payload.getId() + " category mappings!");
-					});
+					context.client().execute(() -> System.out.println("Received " + payload.getId() + " category mappings!"));
 				});
 	}
 }
