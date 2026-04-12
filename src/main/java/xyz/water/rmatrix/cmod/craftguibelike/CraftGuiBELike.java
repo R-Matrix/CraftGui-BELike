@@ -2,9 +2,12 @@ package xyz.water.rmatrix.cmod.craftguibelike;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.water.rmatrix.cmod.craftguibelike.item.ModItem;
+import xyz.water.rmatrix.cmod.craftguibelike.network.RecipeCategoryS2CPayLoad;
 
 public class CraftGuiBELike implements ModInitializer {
 	public static final String MOD_ID = "craftgui-belike";
@@ -21,6 +24,8 @@ public class CraftGuiBELike implements ModInitializer {
 		// Proceed with mild caution.
 
 		ModItem.initialize();
+
+		PayloadTypeRegistry.playS2C().register(RecipeCategoryS2CPayLoad.ID, RecipeCategoryS2CPayLoad.CODEC);
 
 		LOGGER.info("Hello Fabric world!");
 	}
