@@ -33,7 +33,7 @@ import java.util.Map;
 
 /**
 * 配方id -> 分类id
-**/
+*/
 public record RecipeCategoryS2CPayLoad(Map<Identifier, Identifier> categoryMapping) implements CustomPayload {
     public static final Identifier CATEGORY_PACKET_ID = Identifier.of(CraftGuiBELike.MOD_ID, "category_sync");
     public static final Id<RecipeCategoryS2CPayLoad> ID = new Id<>(CATEGORY_PACKET_ID);

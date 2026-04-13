@@ -25,6 +25,7 @@ package xyz.water.rmatrix.cmod.craftguibelike.category;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.RecipeManager;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +83,32 @@ public class CategoryDetector {
         }
 
     }
+
+    public Map<Identifier, Identifier> detectAll(RecipeManager recipeManager){
+        Map<Identifier, Identifier> results = new HashMap<>();
+
+        for(var entry : recipeManager.getStonecutterRecipes().entries()){
+            for (var recipeEntry : entry.recipe().recipe())
+        }
+        // todo
+        return Map.of();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void registerCategoryFromConfig(Identifier id, JsonObject data){
         RecipeCategoryDefinition.Builder builder = new RecipeCategoryDefinition.Builder().id(id);
