@@ -4,9 +4,14 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.mixin.recipe.ServerRecipeManagerMixin;
+import net.minecraft.recipe.ServerRecipeManager;
+import net.minecraft.util.ActionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.water.rmatrix.cmod.craftguibelike.event.RecipeUnlockCallback;
 import xyz.water.rmatrix.cmod.craftguibelike.item.ModItem;
+import xyz.water.rmatrix.cmod.craftguibelike.manager.ServerCategoryManager;
 import xyz.water.rmatrix.cmod.craftguibelike.network.RecipeCategoryS2CPayLoad;
 
 public class CraftGuiBELike implements ModInitializer {
@@ -26,6 +31,11 @@ public class CraftGuiBELike implements ModInitializer {
 		ModItem.initialize();
 
 		PayloadTypeRegistry.playS2C().register(RecipeCategoryS2CPayLoad.ID, RecipeCategoryS2CPayLoad.CODEC);
+
+		RecipeUnlockCallback.EVENT.register(((player, recipeId) -> {
+			ServerCategoryManager.getInstance().onRecipeUnlocked(player, recipeId);
+			return ActionResult.PASS;
+		}));
 
 		LOGGER.info("Hello Fabric world!");
 	}

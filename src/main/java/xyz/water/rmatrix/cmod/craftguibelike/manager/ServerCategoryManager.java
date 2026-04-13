@@ -22,12 +22,15 @@
 
 package xyz.water.rmatrix.cmod.craftguibelike.manager;
 
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.water.rmatrix.cmod.craftguibelike.category.CategoryDetector;
+import xyz.water.rmatrix.cmod.craftguibelike.network.RecipeCategoryS2CPayLoad;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,10 +40,10 @@ public class ServerCategoryManager {
     private static ServerCategoryManager INSTANCE;
 
     private final CategoryDetector detector = new CategoryDetector();
-    private Map<Identifier, Identifier> cachedMapping = new HashMap<>();
+    private Map<Identifier, Identifier> cachedMapping = new HashMap<>(); // 配方 id -> 分类 id
     private boolean initialized = false;
 
-    public ServerCategoryManager getInstance(){
+    public static ServerCategoryManager getInstance(){
         if(INSTANCE == null) INSTANCE = new ServerCategoryManager();
         return INSTANCE;
     }
@@ -62,10 +65,19 @@ public class ServerCategoryManager {
     }
 
     /**
-     * 在玩家登录时发送分类数据
+     * 在玩家解锁配方时发送分类数据
      */
-    public void sendToPlayer(){
-        //todo
+    public void onRecipeUnlocked(ServerPlayerEntity player, Identifier recipeId){
+        if(!ServerPlayNetworking.canSend(player, RecipeCategoryS2CPayLoad.ID)) return;
+
+        Identifier categoryId = getCategoryForRecipe(recipeId);
+
+        if(categoryId == null) return;
+
+        Map<Identifier, Identifier> update = Map.of(recipeId, categoryId);
+        RecipeCategoryS2CPayLoad packet = new RecipeCategoryS2CPayLoad(update);
+        ServerPlayNetworking.send(player, packet);
+        LOGGER.debug("Send incremental category update for {},  to {}", recipeId, player.getName());
     }
 
 
@@ -73,6 +85,10 @@ public class ServerCategoryManager {
 
     private void loadAllConfigs(MinecraftServer server) {
         //todo
+    }
+
+    public Identifier getCategoryForRecipe(Identifier recipeId){
+        return cachedMapping.get(recipeId);
     }
 
 }
