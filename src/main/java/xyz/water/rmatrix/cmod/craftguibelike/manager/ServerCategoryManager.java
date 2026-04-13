@@ -77,7 +77,7 @@ public class ServerCategoryManager {
         Map<Identifier, Identifier> update = Map.of(recipeId, categoryId);
         RecipeCategoryS2CPayLoad packet = new RecipeCategoryS2CPayLoad(update);
         ServerPlayNetworking.send(player, packet);
-        LOGGER.debug("Send incremental category update for {},  to {}", recipeId, player.getName());
+        LOGGER.info("Send incremental category update for {},  to {}", recipeId, player.getName());
     }
 
 

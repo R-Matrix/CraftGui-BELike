@@ -24,18 +24,18 @@ package xyz.water.rmatrix.cmod.craftguibelike.category;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.StonecuttingRecipe;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 
@@ -88,39 +88,54 @@ public class CategoryDetector {
         Map<Identifier, Identifier> results = new HashMap<>();
 
         for(var entry : recipeManager.getStonecutterRecipes().entries()){
-            for (var recipeEntry : entry.recipe().recipe())
+
+            Optional<RecipeEntry<StonecuttingRecipe>> recipeEntryOptional = entry.recipe().recipe();
+            if(recipeEntryOptional.isEmpty()) continue;
+            Identifier recipeId = recipeEntryOptional.get().id().getValue();
+            Recipe<?> recipe = recipeEntryOptional.get().value();
+
+            detectCategory(recipeId, recipe).ifPresent(categoryId -> results.put(recipeId, categoryId));
         }
-        // todo
-        return Map.of();
+
+        LOGGER.info("Detected {} categorized recipes", results.size());
+        return results;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public void registerCategoryFromConfig(Identifier id, JsonObject data){
         RecipeCategoryDefinition.Builder builder = new RecipeCategoryDefinition.Builder().id(id);
 
         if(data.has("display_name")) builder.displayName(data.get("display_name").getAsString());
-        if(data.has("primary_icon")) builder.displayName(data.get("primary_icon").getAsString());
+        if(data.has("primary_icon")) builder.primaryIcon(Registries.ITEM.get(Identifier.of(data.getAsString())));
+        if(data.has("primary_icon")) builder.primaryIcon(Registries.ITEM.get(Identifier.of(data.getAsString())));
+        if(data.has("priority"    )) builder.priority   (data.get("priority").getAsInt());
 
         //todo : icons and priority
 
         registeredCategory.put(id, builder.build());
     }
 
-    private record PatternRule(Pattern pattern, Identifier id) {}
+    /**
+     * 检测单个物品分类
+     *
+     * @param recipeId 配方 id
+     * @param recipe 配方
+     * @return 分类 id
+     */
+    private Optional<Identifier> detectCategory(Identifier recipeId, Recipe<?> recipe){
+        if(categoryMapping.containsKey(recipeId)){
+            return Optional.of(categoryMapping.get(recipeId));
+        }
+
+        String recipeIdStr = recipeId.toString();
+        for (PatternRule rule : patternRules){
+            if(rule.pattern.matcher(recipeIdStr).matches()){
+                return Optional.of(rule.categoryId);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private record PatternRule(Pattern pattern, Identifier categoryId) {}
 
 }
