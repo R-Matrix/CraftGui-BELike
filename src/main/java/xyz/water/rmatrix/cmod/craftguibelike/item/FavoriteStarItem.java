@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package xyz.water.rmatrix.cmod.craftguibelike.network;
+package xyz.water.rmatrix.cmod.craftguibelike.item;
 
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -32,6 +32,8 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.TestOnly;
+import xyz.water.rmatrix.cmod.craftguibelike.network.RecipeCategoryS2CPayLoad;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +44,7 @@ public class FavoriteStarItem extends Item {
         super(settings);
     }
 
+    @TestOnly
     @Override
     public ActionResult use (World world, PlayerEntity player, Hand hand){
         if(world.isClient) return ActionResult.PASS;

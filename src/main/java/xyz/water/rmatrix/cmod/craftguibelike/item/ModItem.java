@@ -31,7 +31,7 @@ import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike;
 import java.util.function.Function;
 
 public final class ModItem {
-    public static final Item FAVORITE_STAR = register("favorite_star", Item::new, new Item.Settings());
+    public static final Item FAVORITE_STAR = register("favorite_star", FavoriteStarItem::new, new Item.Settings());
 
     private ModItem(){}
 

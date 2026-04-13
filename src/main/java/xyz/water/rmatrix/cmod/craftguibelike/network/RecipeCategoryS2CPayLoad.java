@@ -46,7 +46,7 @@ public record RecipeCategoryS2CPayLoad(Map<Identifier, Identifier> categoryMappi
                 });
             },
             buf -> {
-                int size = buf.readInt();
+                int size = buf.readVarInt();
                 Map<Identifier, Identifier> map = new HashMap<>();
                 for(int i = 0; i < size; i++){
                     Identifier recipeId = buf.readIdentifier();
