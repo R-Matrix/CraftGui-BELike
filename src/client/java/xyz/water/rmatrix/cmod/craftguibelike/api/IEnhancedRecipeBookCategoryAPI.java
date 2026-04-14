@@ -23,13 +23,9 @@
 package xyz.water.rmatrix.cmod.craftguibelike.api;
 
 import net.minecraft.item.Item;
-import net.minecraft.recipe.NetworkRecipeId;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Set;
-import java.util.UUID;
 
 public interface IEnhancedRecipeBookCategoryAPI {
 

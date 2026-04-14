@@ -24,7 +24,8 @@ package xyz.water.rmatrix.cmod.craftguibelike.item;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.registry.*;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike;
 

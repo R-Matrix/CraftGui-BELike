@@ -50,7 +50,9 @@ import xyz.water.rmatrix.cmod.craftguibelike.api.impl.FavoritesManagerImpl;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.SorterManager;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.favoriteMiscUtils.CraftingHandlerAccess;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mixin(RecipeBookWidget.class)

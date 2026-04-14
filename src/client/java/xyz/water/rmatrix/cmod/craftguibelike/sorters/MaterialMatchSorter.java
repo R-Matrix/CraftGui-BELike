@@ -29,13 +29,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeDisplayEntry;
 import net.minecraft.recipe.RecipeFinder;
-import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeSorter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class MaterialMatchSorter implements IRecipeSorter {
 

@@ -23,7 +23,6 @@
 package xyz.water.rmatrix.cmod.craftguibelike.utils;
 
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
-import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

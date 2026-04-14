@@ -25,7 +25,6 @@ package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.addNewCategory;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
-
 import net.minecraft.client.gui.screen.recipebook.RecipeGroupButtonWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.recipe.book.RecipeBookCategory;

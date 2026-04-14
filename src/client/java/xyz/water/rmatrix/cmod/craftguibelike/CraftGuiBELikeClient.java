@@ -3,9 +3,6 @@ package xyz.water.rmatrix.cmod.craftguibelike;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.impl.screenhandler.client.ClientNetworking;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.util.Identifier;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
@@ -28,10 +25,18 @@ public class CraftGuiBELikeClient implements ClientModInitializer {
 
 		ClientCommandRegistrationCallback.EVENT.register(new ClearFavoriteCommand());
 
-		ClientPlayNetworking.registerGlobalReceiver(RecipeCategoryS2CPayLoad.ID,
-				(payload, context) -> {
-					Map<Identifier, Identifier> map = payload.categoryMapping();
-					context.client().execute(() -> System.out.println("Received " + " category mappings!"));
+		ClientPlayNetworking.registerGlobalReceiver(
+			RecipeCategoryS2CPayLoad.ID,
+			(payload, context) -> {
+				Map<Identifier, Identifier> map = payload.categoryMapping();
+				context.client().execute(() -> {
+					//todo : 交给主线程处理
+
+					System.out.println("Received " + " category mappings!");
 				});
+			}
+		);
+
+
 	}
 }

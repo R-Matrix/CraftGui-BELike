@@ -31,12 +31,12 @@ import net.minecraft.util.ActionResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xyz.water.rmatrix.cmod.craftguibelike.event.RecipeUnlockCallback;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -53,28 +53,24 @@ public abstract class ServerRecipeBookMixin {
     @Inject(method = "unlockRecipes", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V",
-            shift = At.Shift.AFTER
-    ),      cancellable = true)
+            shift = At.Shift.AFTER))
     private void onUnlockRecipeSendMyPacket(
-            Collection<RecipeEntry<?>> recipes, ServerPlayerEntity player, CallbackInfoReturnable<Integer> cir
+            Collection<RecipeEntry<?>> recipes,
+            ServerPlayerEntity player,
+            CallbackInfoReturnable<Integer> cir
     ){
-        for(var entry : this.unlocked){
-            ActionResult result = RecipeUnlockCallback.EVENT.invoker().interact(player, entry.getValue());
-            if(result == ActionResult.FAIL){
-                RecipeEntry<?> recipeEntry = findRecipeEntryFromRegistryKey(entry, recipes);
-                if (recipeEntry != null) this.lockRecipes(List.of(recipeEntry), player);
-                cir.cancel();
-            }
-        }
-    }
+        List<RecipeEntry<?>> failedRecipes = new ArrayList<>();
+        for(var recipeEntry : recipes){
+            RegistryKey<Recipe<?>> registryKey = recipeEntry.id();
+            if (this.unlocked.contains(registryKey) || recipeEntry.value().isIgnoredInRecipeBook()) continue;
 
-    @Unique
-    private RecipeEntry<?> findRecipeEntryFromRegistryKey(RegistryKey<Recipe<?>> entryKey, Collection<RecipeEntry<?>> recipes){
-        for(var entry1 : recipes){
-            if(entry1.id().equals(entryKey)){
-                return entry1;
+            ActionResult result = RecipeUnlockCallback.EVENT.invoker().interact(player, registryKey.getValue());
+            if(result == ActionResult.FAIL){
+                failedRecipes.add(recipeEntry);
             }
         }
-        return null;
+
+        lockRecipes(failedRecipes, player);
+
     }
 }

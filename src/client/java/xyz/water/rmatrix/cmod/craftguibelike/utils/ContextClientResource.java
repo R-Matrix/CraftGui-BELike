@@ -20,19 +20,11 @@
  * SOFTWARE.
  */
 
-package xyz.water.rmatrix.cmod.craftguibelike.api;
+package xyz.water.rmatrix.cmod.craftguibelike.utils;
 
-import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
-
-import java.util.List;
-
-public interface IRecipeSorter {
-
-    List<RecipeResultCollection> sortRecipes(
-            List<RecipeResultCollection> recipes
-    );
-
-    default String getName() {
-        return this.getClass().getSimpleName();
+public class ContextClientResource implements AutoCloseable{
+    @Override
+    public void close() throws Exception {
+        
     }
 }

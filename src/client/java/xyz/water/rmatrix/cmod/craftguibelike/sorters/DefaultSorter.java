@@ -23,11 +23,9 @@
 package xyz.water.rmatrix.cmod.craftguibelike.sorters;
 
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
-import net.minecraft.recipe.book.RecipeBookGroup;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeSorter;
 
 import java.util.List;
-import java.util.UUID;
 
 public class DefaultSorter implements IRecipeSorter {
     @Override

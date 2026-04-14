@@ -30,7 +30,9 @@ import xyz.water.rmatrix.cmod.craftguibelike.api.IFavoritesManager;
 import xyz.water.rmatrix.cmod.craftguibelike.mixin.client.favoriteRecipe.ClientRecipeBookAccess;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.FavoriteRecipeStorage;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class FavoritesManagerImpl implements IFavoritesManager {

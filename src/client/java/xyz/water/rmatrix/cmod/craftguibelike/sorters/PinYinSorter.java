@@ -23,11 +23,8 @@
 package xyz.water.rmatrix.cmod.craftguibelike.sorters;
 
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeDisplayEntry;
-import net.minecraft.recipe.book.RecipeBookGroup;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.context.ContextParameterMap;
 import net.minecraft.util.context.ContextType;
 import net.sourceforge.pinyin4j.PinyinHelper;
@@ -37,7 +34,6 @@ import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombi
 import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeSorter;
 
 import java.util.List;
-import java.util.UUID;
 
 public class PinYinSorter implements IRecipeSorter {
 
