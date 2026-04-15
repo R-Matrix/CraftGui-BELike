@@ -92,9 +92,8 @@ public class CategoryDetector {
             Optional<RecipeEntry<StonecuttingRecipe>> recipeEntryOptional = entry.recipe().recipe();
             if(recipeEntryOptional.isEmpty()) continue;
             Identifier recipeId = recipeEntryOptional.get().id().getValue();
-            Recipe<?> recipe = recipeEntryOptional.get().value();
 
-            detectCategory(recipeId, recipe).ifPresent(categoryId -> results.put(recipeId, categoryId));
+            detectCategory(recipeId).ifPresent(categoryId -> results.put(recipeId, categoryId));
         }
 
         LOGGER.info("Detected {} categorized recipes", results.size());
@@ -118,10 +117,9 @@ public class CategoryDetector {
      * 检测单个物品分类
      *
      * @param recipeId 配方 id
-     * @param recipe 配方
      * @return 分类 id
      */
-    private Optional<Identifier> detectCategory(Identifier recipeId, Recipe<?> recipe){
+    public Optional<Identifier> detectCategory(Identifier recipeId){
         if(categoryMapping.containsKey(recipeId)){
             return Optional.of(categoryMapping.get(recipeId));
         }

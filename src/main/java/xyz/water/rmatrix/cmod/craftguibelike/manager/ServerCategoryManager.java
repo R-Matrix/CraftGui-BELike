@@ -23,17 +23,23 @@
 package xyz.water.rmatrix.cmod.craftguibelike.manager;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.ServerRecipeBook;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.water.rmatrix.cmod.craftguibelike.category.CategoryDetector;
+import xyz.water.rmatrix.cmod.craftguibelike.mixin.ServerRecipeBookAccess;
 import xyz.water.rmatrix.cmod.craftguibelike.network.RecipeCategoryS2CPayLoad;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class ServerCategoryManager {
     private static final Logger LOGGER = LoggerFactory.getLogger("ServerCategoryManager");
@@ -78,6 +84,23 @@ public class ServerCategoryManager {
         RecipeCategoryS2CPayLoad packet = new RecipeCategoryS2CPayLoad(update);
         ServerPlayNetworking.send(player, packet);
         LOGGER.debug("Send incremental category update for {},  to {}", recipeId, player.getName());
+    }
+
+    public void onPlayerLoginSendUnlockedCategory(ServerPlayerEntity player){
+        ServerRecipeBook recipeBook = player.getRecipeBook();
+        Collection<RegistryKey<Recipe<?>>> unlocked = ((ServerRecipeBookAccess)recipeBook).craftGui_BELike$getUnlockedRecipes();
+
+        Map<Identifier, Identifier> unlockedMappings = new HashMap<>();
+
+        for(var key : unlocked){
+            Identifier recipeId = key.getValue();
+            Optional<Identifier> categoryId = detector.detectCategory(recipeId);
+
+            categoryId.ifPresent(identifier -> unlockedMappings.put(recipeId, identifier));
+
+            ServerPlayNetworking.send(player, new RecipeCategoryS2CPayLoad(unlockedMappings));
+
+        }
     }
 
 
