@@ -71,7 +71,7 @@ public abstract class ServerRecipeBookMixin {
             }
         }
 
-        lockRecipes(failedRecipes, player);
+        if(!failedRecipes.isEmpty()) lockRecipes(failedRecipes, player);
 
     }
 }

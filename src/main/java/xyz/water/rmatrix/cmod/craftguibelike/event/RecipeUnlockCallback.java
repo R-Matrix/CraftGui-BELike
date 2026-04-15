@@ -34,7 +34,7 @@ import net.minecraft.util.Identifier;
  * 会返回:
  * <li> Success 退出后续处理过程, 然后继续正常的配方解锁行为 </li>
  * <li> Pass 回落到后续处理过程, 如果没有其他监听器了, 默认为 Success </li>
- * <li> Fail 推出后续处理过程, 配方不会被解锁 </li>
+ * <li> Fail 退出后续处理过程, 配方不会被解锁 </li>
  */
 public interface RecipeUnlockCallback {
 
@@ -53,7 +53,7 @@ public interface RecipeUnlockCallback {
 
     /**
      *
-     * @param player 玩家
+     * @param player 玩家(服务端)
      * @param recipeId 配方 id
      * @return ActionResult
      */

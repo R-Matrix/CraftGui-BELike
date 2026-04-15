@@ -45,8 +45,7 @@ public class ServerCategoryManager {
     private static final Logger LOGGER = LoggerFactory.getLogger("ServerCategoryManager");
     private static ServerCategoryManager INSTANCE;
 
-    private final CategoryDetector detector = new CategoryDetector();
-    private Map<Identifier, Identifier> cachedMapping = new HashMap<>(); // 配方 id -> 分类 id
+    private final CategoryDetector detector = CategoryDetector.getInstance();// 配方 id -> 分类 id
     private boolean initialized = false;
 
     public static ServerCategoryManager getInstance(){
@@ -60,14 +59,8 @@ public class ServerCategoryManager {
             return;
         }
 
-        RecipeManager recipeManager = server.getRecipeManager();
-
-        loadAllConfigs(server);
-
-        cachedMapping = detector.detectAll(recipeManager);
-
         initialized = true;
-        LOGGER.info("ServerCategoryManager initialized with {} mappings", cachedMapping.size());
+//        LOGGER.info("ServerCategoryManager initialized with {} mappings", cachedMapping.size());
     }
 
     /**
@@ -76,42 +69,36 @@ public class ServerCategoryManager {
     public void onRecipeUnlocked(ServerPlayerEntity player, Identifier recipeId){
         if(!ServerPlayNetworking.canSend(player, RecipeCategoryS2CPayLoad.ID)) return;
 
-        Identifier categoryId = getCategoryForRecipe(recipeId);
+        Optional<Identifier> categoryId = detector.detectCategory(recipeId);
 
-        if(categoryId == null) return;
+        if(categoryId.isEmpty()) return;
 
-        Map<Identifier, Identifier> update = Map.of(recipeId, categoryId);
+        Map<Identifier, Identifier> update = Map.of(recipeId, categoryId.get());
         RecipeCategoryS2CPayLoad packet = new RecipeCategoryS2CPayLoad(update);
         ServerPlayNetworking.send(player, packet);
-        LOGGER.debug("Send incremental category update for {},  to {}", recipeId, player.getName());
+        LOGGER.debug("Send incremental category update for {},  to {}", recipeId, player.getDisplayName());
     }
 
+    /**
+     * 在玩家登录时发送已解锁配方分类数据
+     */
     public void onPlayerLoginSendUnlockedCategory(ServerPlayerEntity player){
         ServerRecipeBook recipeBook = player.getRecipeBook();
         Collection<RegistryKey<Recipe<?>>> unlocked = ((ServerRecipeBookAccess)recipeBook).craftGui_BELike$getUnlockedRecipes();
 
         Map<Identifier, Identifier> unlockedMappings = new HashMap<>();
 
-        for(var key : unlocked){
+        for(var key : unlocked) {
             Identifier recipeId = key.getValue();
             Optional<Identifier> categoryId = detector.detectCategory(recipeId);
 
             categoryId.ifPresent(identifier -> unlockedMappings.put(recipeId, identifier));
-
-            ServerPlayNetworking.send(player, new RecipeCategoryS2CPayLoad(unlockedMappings));
-
         }
-    }
 
-
-
-
-    private void loadAllConfigs(MinecraftServer server) {
-        //todo
-    }
-
-    public Identifier getCategoryForRecipe(Identifier recipeId){
-        return cachedMapping.get(recipeId);
+        if(!unlockedMappings.isEmpty()){
+            ServerPlayNetworking.send(player, new RecipeCategoryS2CPayLoad(unlockedMappings));
+        }
+        LOGGER.info("send {} recipes to new-log-in player {}", unlockedMappings.size(), player.getDisplayName());
     }
 
 }

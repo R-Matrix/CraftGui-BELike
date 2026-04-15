@@ -1,6 +1,7 @@
 package xyz.water.rmatrix.cmod.craftguibelike;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.util.ActionResult;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class CraftGuiBELike implements ModInitializer {
 			ServerCategoryManager.getInstance().onRecipeUnlocked(player, recipeId);
 			return ActionResult.PASS;
 		}));
+
 
 		LOGGER.info("Hello Fabric world!");
 	}
