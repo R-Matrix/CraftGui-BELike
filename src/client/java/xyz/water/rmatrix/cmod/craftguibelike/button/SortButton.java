@@ -47,7 +47,7 @@ public class SortButton extends AbstractMyRecipeBookResultButton {
     }
 
     private static Text getTooltipText() {
-        return Text.translatable("craftgui-belike.sort.current").append(
+        return Text.translatable("craftgui-belike.button.sort.current").append(
                 Text.translatable(SorterManager.getINSTANCE().getCurrentSorter().getName())
         );
     }

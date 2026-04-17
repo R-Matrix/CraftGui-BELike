@@ -49,7 +49,7 @@ public class PinYinSorter implements IRecipeSorter {
 
     @Override
     public String getName() {
-        return "craftgui-belike.pinyin_sort";
+        return "craftgui-belike.sort.pinyin_sort";
     }
 
     @Override

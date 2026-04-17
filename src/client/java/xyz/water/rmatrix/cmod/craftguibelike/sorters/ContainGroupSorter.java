@@ -37,7 +37,7 @@ public class ContainGroupSorter implements IRecipeSorter {
 
     @Override
     public String getName() {
-        return "craftgui-belike.contain_group_sort";
+        return "craftgui-belike.sort.contain_group_sort";
     }
 
     @Override

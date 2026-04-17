@@ -48,7 +48,7 @@ public class MouseScrollEnableButton extends AbstractMyRecipeBookResultButton {
     }
 
     private static Text getTooltipText() {
-        return Text.translatable("craftgui-belike.mouse_scroll.current").append(
+        return Text.translatable("craftgui-belike.button.mouse_scroll.current").append(
                 Text.literal(enableMouseScroll ? " §a✓" : " §c✗")
         );
     }

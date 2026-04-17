@@ -30,6 +30,6 @@ public class VanillaFirstSorter extends AbstractItemNamespaceSorter {
 
     @Override
     public String getName() {
-        return "craftgui-belike.vanilla_first_sort";
+        return "craftgui-belike.sort.vanilla_first_sort";
     }
 }

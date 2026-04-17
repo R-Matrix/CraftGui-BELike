@@ -38,7 +38,7 @@ public class RegistryOrderSorter implements IRecipeSorter {
 
     @Override
     public String getName() {
-        return "craftgui-belike.register_order_sort";
+        return "craftgui-belike.sort.register_order_sort";
     }
 
     @Override

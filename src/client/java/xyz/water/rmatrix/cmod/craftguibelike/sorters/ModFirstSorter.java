@@ -30,6 +30,6 @@ public class ModFirstSorter extends AbstractItemNamespaceSorter {
 
     @Override
     public String getName() {
-        return "craftgui-belike.mod_first_sort";
+        return "craftgui-belike.sort.mod_first_sort";
     }
 }
