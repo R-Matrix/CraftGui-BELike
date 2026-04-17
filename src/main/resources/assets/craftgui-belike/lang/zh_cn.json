@@ -1,11 +1,12 @@
 {
-  "craftgui-belike.sort.current": "当前排序模式:\n",
+  "craftgui-belike.button.sort.current": "当前排序模式:\n",
+  "craftgui-belike.button.mouse_scroll.current": "允许滚轮翻页:",
   "craftgui-belike.sort.material_match_sort": "材料匹配",
   "craftgui-belike.sort.default_sort": "首字母顺序",
-  "craftgui-belike.register_order_sort": "注册表顺序",
-  "craftgui-belike.vanilla_first_sort": "原版物品优先",
-  "craftgui-belike.mod_first_sort": "模组物品优先",
-  "craftgui-belike.pinyin_sort": "拼音顺序",
-  "craftgui-belike.contain_group_sort": "保持组内的首字母排序",
-  "craftgui-belike.mouse_scroll.current": "允许滚轮翻页:"
+  "craftgui-belike.sort.register_order_sort": "注册表顺序",
+  "craftgui-belike.sort.vanilla_first_sort": "原版物品优先",
+  "craftgui-belike.sort.mod_first_sort": "模组物品优先",
+  "craftgui-belike.sort.pinyin_sort": "拼音顺序",
+  "craftgui-belike.sort.contain_group_sort": "保持组内的首字母排序"
+
 }

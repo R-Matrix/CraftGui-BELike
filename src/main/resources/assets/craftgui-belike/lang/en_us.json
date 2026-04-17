@@ -1,12 +1,11 @@
 {
-  "craftgui-belike.sort.current" : "current sort mode:\n",
+  "craftgui-belike.button.sort.current" : "current sort mode:\n",
+  "craftgui-belike.button.mouse_scroll.current" : "mouseScrollEnable:",
   "craftgui-belike.sort.material_match_sort" : "material_match_sort",
   "craftgui-belike.sort.default_sort" : "default_sort(first_char)",
-  "craftgui-belike.register_order_sort" : "register_order_sort",
-  "craftgui-belike.vanilla_first_sort": "vanilla_first_sort",
-  "craftgui-belike.mod_first_sort" : "mod_first_sort",
-  "craftgui-belike.pinyin_sort" : "pinyin_sort",
-  "craftgui-belike.contain_group_sort": "contain_group_sort",
-  "craftgui-belike.mouse_scroll.current" : "mouseScrollEnable:"
-
+  "craftgui-belike.sort.register_order_sort" : "register_order_sort",
+  "craftgui-belike.sort.vanilla_first_sort": "vanilla_first_sort",
+  "craftgui-belike.sort.mod_first_sort" : "mod_first_sort",
+  "craftgui-belike.sort.pinyin_sort" : "pinyin_sort",
+  "craftgui-belike.sort.contain_group_sort": "contain_group_sort"
 }

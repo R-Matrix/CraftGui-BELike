@@ -15,6 +15,9 @@
 	"icon": "assets/craftgui-belike/icon.png",
 	"environment": "client",
 	"entrypoints": {
+		"fabric-datagen": [
+			"xyz.water.rmatrix.cmod.craftguibelike.example.CraftGuiBELikeDataGen"
+		],
 		"main": [
 			"xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike"
 		],
