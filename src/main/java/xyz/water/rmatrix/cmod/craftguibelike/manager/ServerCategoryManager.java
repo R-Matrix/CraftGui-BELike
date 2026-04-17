@@ -24,9 +24,7 @@ package xyz.water.rmatrix.cmod.craftguibelike.manager;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerRecipeBook;
 import net.minecraft.util.Identifier;
@@ -53,7 +51,7 @@ public class ServerCategoryManager {
         return INSTANCE;
     }
 
-    public void initialize(MinecraftServer server){
+    public void initialize(){
         if(initialized){
             LOGGER.info("ServerCraftManager has already initialized");
             return;
