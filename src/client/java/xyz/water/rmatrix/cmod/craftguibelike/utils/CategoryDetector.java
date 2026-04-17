@@ -24,7 +24,6 @@ package xyz.water.rmatrix.cmod.craftguibelike.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -38,46 +37,14 @@ import java.util.regex.Pattern;
 
 public class CategoryDetector {
     private static final Logger LOGGER = LoggerFactory.getLogger("CategoryDetector");
+
+    private final List<PatternRule> patternRules = new ArrayList<>();
+
     // 配方 -> 分类
     private static final Map<Identifier, Identifier> categoryMapping = new HashMap<>();
     private static CategoryDetector INSTANCE;
+
     private final Map<Identifier, RecipeCategoryDefinition> registeredCategory = new HashMap<>();
-    public List<PatternRule> patternRules = new ArrayList<>();
-
-    public static CategoryDetector getInstance(){
-        if(INSTANCE == null) INSTANCE = new CategoryDetector();
-        return INSTANCE;
-    }
-
-    protected void categoryValidator(Identifier categoryId){
-        if (!registeredCategory.containsKey(categoryId)) {
-            RecipeCategoryDefinition defaultDefinition = new RecipeCategoryDefinition.Builder()
-                    .id(categoryId)
-                    .displayName(categoryId.toTranslationKey())
-                    .primaryIcon(Items.PAPER)
-                    .build();
-
-            registeredCategory.put(categoryId, defaultDefinition);
-
-            LOGGER.warn("Category {} is not registered, using default definition. " +
-                    "Please call RecipeCategoryAPI.registerCategory() first.", categoryId);
-        }
-    }
-
-    public void addMapping(Identifier recipeId, Identifier categoryId){
-        categoryValidator(categoryId);
-        categoryMapping.put(recipeId, categoryId);
-    }
-
-    public void addPatternMapping(String pattern, Identifier categoryId){
-        categoryValidator(categoryId);
-        String regex = pattern.replace("*", ".*").replace("?", ".");
-        patternRules.add(new PatternRule(Pattern.compile("^" + regex + "$"), categoryId));
-    }
-
-    public void registerCategory(Identifier categoryId, RecipeCategoryDefinition definition){
-        registeredCategory.put(categoryId, definition);
-    }
 
     public void loadConfig(String modId, InputStream configStream){
         try {
@@ -89,7 +56,7 @@ public class CategoryDetector {
 
             for (String categoryIdStr : categories.keySet()) {
                 JsonObject categoryData = categories.getAsJsonObject(categoryIdStr);
-                Identifier categoryId = Identifier.of(modId, categoryIdStr);
+                Identifier categoryId = Identifier.of(categoryIdStr);
                 registerCategoryFromConfig(categoryId, categoryData);
 
                 if (categoryData.has("recipes")) {
@@ -113,17 +80,9 @@ public class CategoryDetector {
         }
     }
 
-    public void registerCategoryFromConfig(Identifier id, JsonObject data){
-        RecipeCategoryDefinition.Builder builder = new RecipeCategoryDefinition.Builder().id(id);
-
-        if(data.has("display_name"  )) builder.displayName  (data.get("display_name").getAsString());
-        if(data.has("primary_icon"  )) builder.primaryIcon  (Registries.ITEM.get(Identifier.of(data.getAsString())));
-        if(data.has("secondary_icon")) builder.secondaryIcon(Registries.ITEM.get(Identifier.of(data.getAsString())));
-        if(data.has("priority"      )) builder.priority     (data.get("priority").getAsInt());
-
-        //todo : icons and priority
-
-        registeredCategory.put(id, builder.build());
+    public static CategoryDetector getInstance(){
+        if(INSTANCE == null) INSTANCE = new CategoryDetector();
+        return INSTANCE;
     }
 
     /**
@@ -132,7 +91,7 @@ public class CategoryDetector {
      * @param recipeId 配方 id
      * @return 分类 id
      */
-    public Optional<Identifier> detectCategory(Identifier recipeId){
+    public Optional<Identifier> getCategory(Identifier recipeId){
         if(categoryMapping.containsKey(recipeId)){
             return Optional.of(categoryMapping.get(recipeId));
         }
@@ -145,6 +104,21 @@ public class CategoryDetector {
         }
 
         return Optional.empty();
+    }
+
+    public void registerCategoryFromConfig(Identifier id, JsonObject data){
+        RecipeCategoryDefinition.Builder builder = new RecipeCategoryDefinition.Builder().id(id);
+
+        if(data.has("display_name"  )) builder.displayName  (data.get("display_name").getAsString());
+        if(data.has("primary_icon"  )) builder.primaryIcon  (Registries.ITEM.get(Identifier.of(data.getAsString())));
+        if(data.has("secondary_icon")) builder.secondaryIcon(Registries.ITEM.get(Identifier.of(data.getAsString())));
+        if(data.has("priority"      )) builder.priority     (data.get("priority").getAsInt());
+
+        registeredCategory.put(id, builder.build());
+    }
+
+    public Map<Identifier, RecipeCategoryDefinition> getRegisteredCategory() {
+        return registeredCategory;
     }
 
     public record PatternRule(Pattern pattern, Identifier categoryId){}

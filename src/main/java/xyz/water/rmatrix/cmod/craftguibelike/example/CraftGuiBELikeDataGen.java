@@ -36,9 +36,7 @@ import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike;
 import xyz.water.rmatrix.cmod.craftguibelike.category.RecipeCategoryDefinition;
 import xyz.water.rmatrix.cmod.craftguibelike.datagen.RecipeCategoryProvider;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -47,6 +45,31 @@ import java.util.concurrent.CompletableFuture;
  */
 @TestOnly
 public class CraftGuiBELikeDataGen implements DataGeneratorEntrypoint {
+
+
+    private static class MyRecipeGenerator extends FabricRecipeProvider {
+
+        public MyRecipeGenerator(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+            super(output, registriesFuture);
+        }
+        @Override
+        protected RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup registryLookup, RecipeExporter exporter) {
+            return new RecipeGenerator(registryLookup, exporter) {
+                @Override
+                public void generate() {
+                    /*
+                      在这里, 你可以编写你的自定义配方
+
+                      一般情况下, 配方id就是合成结果物品的命id
+                     */
+                }
+            };
+        }
+        @Override
+        public String getName() {
+            return "recipes";
+        }
+    }
 
 
     @Override
@@ -77,27 +100,5 @@ public class CraftGuiBELikeDataGen implements DataGeneratorEntrypoint {
             return categoryProvider;
         }));
 
-    }
-
-    private static class MyRecipeGenerator extends FabricRecipeProvider {
-
-        public MyRecipeGenerator(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
-            super(output, registriesFuture);
-        }
-        @Override
-        protected RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup registryLookup, RecipeExporter exporter) {
-            return new RecipeGenerator(registryLookup, exporter) {
-                @Override
-                public void generate() {
-                    /*
-                      在这里, 你可以编写你的自定义配方
-                     */
-                }
-            };
-        }
-        @Override
-        public String getName() {
-            return "recipes";
-        }
     }
 }

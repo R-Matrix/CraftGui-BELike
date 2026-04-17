@@ -40,11 +40,13 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class RecipeCategoryProvider implements DataProvider {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private final FabricDataOutput output;
     private final String modid;
+
     private final Map<Identifier, RecipeCategoryDefinition> categories = new HashMap<>();
     private final Map<Identifier, List<String>> categoryToRecipes = new HashMap<>();
+
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public RecipeCategoryProvider(FabricDataOutput output, String modid){
         this.output = output;
