@@ -36,8 +36,6 @@ import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.screen.AbstractCraftingScreenHandler;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
-import net.minecraft.util.context.ContextParameterMap;
-import net.minecraft.util.context.ContextType;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -77,24 +75,21 @@ public abstract class RecipeBookWidgetMixin {
         if (!this.currentTab.getCategory().equals(CraftGuiBELikeClient.FAVORITE_CATEGORY) || player == null)
             return original.call(instance, category);
 
+        RecipeFinder finder = new RecipeFinder();
+        player.getInventory().populateRecipeFinder(finder);
+        
         Set<RecipeDisplayEntry> favorites = FavoritesManagerImpl.getINSTANCE().getFavoriteRecipeDisplayEntry(player.getUuid());
 
         List<RecipeResultCollection> collections = favorites.stream()
-                .map(k -> new RecipeResultCollection(List.of(k)))
-                .sorted(Comparator.comparing(k -> k.getAllRecipes().getFirst().display().result()
-                        .getFirst(new ContextParameterMap.Builder().build(new ContextType.Builder().build()))
-                        .getItem().toString())
-                ).collect(Collectors.toList());
+                .map(k -> {
+                    RecipeResultCollection collection = new RecipeResultCollection(List.of(k));
+                    collection.populateRecipes(finder, recipeDisplay -> true);
+                    return collection;
+                })
+                .collect(Collectors.toList());
 
-        collections = SorterManager.getINSTANCE().sort(collections);
-
-        RecipeFinder finder = new RecipeFinder();
-        player.getInventory().populateRecipeFinder(finder);
-
-        for(RecipeResultCollection collection : collections){
-            collection.populateRecipes(finder, recipeDisplay -> true);
-        }
-
-        return collections;
+        return SorterManager.getINSTANCE().sort(collections);
     }
+
+    //todo : fix me : 自定义分类不能使用搜索
 }

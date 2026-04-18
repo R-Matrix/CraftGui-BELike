@@ -41,7 +41,7 @@ public class SortButton extends AbstractMyRecipeBookResultButton {
                 },
                 ButtonWidget.DEFAULT_NARRATION_SUPPLIER);
 
-        this.setTooltip(Tooltip.of(Text.translatable("craftgui-belike.sort.current").append(
+        this.setTooltip(Tooltip.of(Text.translatable("craftgui-belike.button.sort.current").append(
                 Text.translatable(SorterManager.getINSTANCE().getCurrentSorter().getName())
         )));
     }
