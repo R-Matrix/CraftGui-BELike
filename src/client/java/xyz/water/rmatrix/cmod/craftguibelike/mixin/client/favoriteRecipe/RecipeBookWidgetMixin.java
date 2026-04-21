@@ -24,6 +24,8 @@ package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.favoriteRecipe;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
@@ -33,6 +35,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.recipe.RecipeDisplayEntry;
 import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.screen.AbstractCraftingScreenHandler;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
@@ -44,11 +47,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELikeClient;
+import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.FavoritesManagerImpl;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.SorterManager;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.favoriteMiscUtils.CraftingHandlerAccess;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Mixin(RecipeBookWidget.class)
@@ -90,6 +95,4 @@ public abstract class RecipeBookWidgetMixin {
 
         return SorterManager.getINSTANCE().sort(collections);
     }
-
-    //todo : fix me : 自定义分类不能使用搜索
 }

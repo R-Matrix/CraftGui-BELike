@@ -1,0 +1,76 @@
+/*
+ * Copyright (c) 2026 R-Matrix.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.searchLogicRewrite;
+
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
+import net.minecraft.client.gui.screen.recipebook.RecipeGroupButtonWidget;
+import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
+
+import java.util.List;
+import java.util.function.Predicate;
+
+@Mixin(RecipeBookWidget.class)
+public class RecipeBookWidgetMixin {
+
+    @Shadow
+    private RecipeGroupButtonWidget currentTab;
+
+
+    //todo : fix me : 自定义分类不能使用搜索
+
+
+    @WrapOperation(method = "refreshResults", at = @At(value = "INVOKE",
+            target = "Ljava/util/List;removeIf(Ljava/util/function/Predicate;)Z", ordinal = 1))
+    private boolean redirectRemoveIf(List<RecipeResultCollection> instance,
+                                     Predicate<RecipeResultCollection> predicate,
+                                     Operation<Boolean> original,
+                                     @Local ObjectSet<RecipeResultCollection> objectSet){
+
+        RecipeGroupButtonWidget currentTab1 = this.currentTab;
+
+        // todo : flag 启用严格搜索模式
+        if((currentTab1 != null && EnhancedRecipeBookCategoryAPIImpl.getINSTANCE().isRegisteredCategory(currentTab1.getCategory()) || true)){
+
+            return instance.removeIf(collection -> {
+                if(!predicate.test(collection)){
+                    return false;
+                }
+
+                return collection.getAllRecipes().stream().noneMatch(entry ->
+                        objectSet.stream().anyMatch(collection1 ->
+                                collection1.getAllRecipes().stream().anyMatch(entry1 ->
+                                        entry1.id() == entry.id())));
+            });
+        }
+
+        return original.call(instance, predicate);
+    }
+}

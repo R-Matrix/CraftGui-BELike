@@ -4,6 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.util.Identifier;
+import xyz.water.rmatrix.cmod.craftguibelike.api.IEnhancedRecipeBookCategoryAPI;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
 import xyz.water.rmatrix.cmod.craftguibelike.command.ClearFavoriteCommand;
 import xyz.water.rmatrix.cmod.craftguibelike.item.ModItem;
@@ -16,7 +17,7 @@ public class CraftGuiBELikeClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
-		EnhancedRecipeBookCategoryAPIImpl api = EnhancedRecipeBookCategoryAPIImpl.getINSTANCE();
+		IEnhancedRecipeBookCategoryAPI api = EnhancedRecipeBookCategoryAPIImpl.getINSTANCE();
 		FAVORITE_CATEGORY = api.registerCategory(FAVORITE_CATEGORY_ID, ModItem.FAVORITE_STAR);
 
 		ClientCommandRegistrationCallback.EVENT.register(new ClearFavoriteCommand());

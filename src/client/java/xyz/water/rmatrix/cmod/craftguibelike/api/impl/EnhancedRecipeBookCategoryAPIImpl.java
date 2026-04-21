@@ -24,6 +24,7 @@ package xyz.water.rmatrix.cmod.craftguibelike.api.impl;
 
 import net.minecraft.item.Item;
 import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -94,5 +95,10 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
         Set<Identifier> recipes = categoryRecipes.get(category);
         return recipes != null ? Collections.unmodifiableSet(recipes) :
                 Collections.emptySet();
+    }
+
+    public boolean isRegisteredCategory(RecipeBookGroup category){
+        if(category instanceof RecipeBookCategory category1) return categoryRecipes.containsKey(category1);
+        return false;
     }
 }
