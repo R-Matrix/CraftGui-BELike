@@ -25,6 +25,7 @@ package xyz.water.rmatrix.cmod.craftguibelike.api;
 import net.minecraft.item.Item;
 import net.minecraft.recipe.NetworkRecipeId;
 import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,11 +34,27 @@ import java.util.UUID;
 
 public interface IEnhancedRecipeBookCategoryAPI {
 
-    RecipeBookCategory registerCategory(String modId, String categoryId, Item icon);
+    default RecipeBookCategory registerCategory(String modId, String categoryName, Item icon){
+        return registerCategory(modId, categoryName, icon, null);
+    }
 
-    RecipeBookCategory registerCategory(String modId, String  categoryId, Item primaryIcon, @Nullable Item secondaryIcon);
+    default RecipeBookCategory registerCategory(String modId, String categoryName, Item primaryIcon, @Nullable Item secondaryIcon){
+        return registerCategory(Identifier.of(modId, categoryName), primaryIcon, secondaryIcon);
+    };
+
+    default RecipeBookCategory registerCategory(Identifier categoryId, Item icon){
+        return registerCategory(categoryId, icon, null);
+    }
+
+    RecipeBookCategory registerCategory(Identifier categoryId, Item primaryIcon, @Nullable Item secondaryIcon);
 
     void addRecipeToCategory(RecipeBookCategory category, Identifier recipeId);
 
     void removeRecipeFromCategory(RecipeBookCategory category, Identifier recipeId);
+
+    Set<Identifier> getRecipesUnderCategory(RecipeBookCategory category);
+
+    boolean isRegisteredCategory(RecipeBookGroup category);
+
+    RecipeBookCategory getCategoryFromId(Identifier categoryId);
 }

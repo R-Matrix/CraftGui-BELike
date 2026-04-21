@@ -40,27 +40,14 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
 
     private final Map<RecipeBookCategory, Set<Identifier>> categoryRecipes = new LinkedHashMap<>();
 
+    private final Map<Identifier, RecipeBookCategory> idToCategoryMap = new HashMap<>();
+
 
     private EnhancedRecipeBookCategoryAPIImpl(){}
 
     public static EnhancedRecipeBookCategoryAPIImpl getINSTANCE(){
         if(INSTANCE == null) INSTANCE = new EnhancedRecipeBookCategoryAPIImpl();
         return INSTANCE;
-    }
-
-    @Override
-    public RecipeBookCategory registerCategory(String modId, String categoryId, Item icon) {
-        return registerCategory(modId, categoryId, icon, null);
-    }
-
-    @Override
-    public RecipeBookCategory registerCategory(String modId, String categoryId, Item primaryIcon, @Nullable Item secondaryIcon) {
-        Identifier idf = Identifier.of(modId, categoryId);
-        return registerCategory(idf,primaryIcon, secondaryIcon);
-    }
-
-    public RecipeBookCategory registerCategory(Identifier identifier, Item icon){
-        return registerCategory(identifier, icon, null);
     }
 
     public RecipeBookCategory registerCategory(Identifier identifier, Item primaryIcon, @Nullable Item secondaryIcon){
@@ -73,6 +60,7 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
 
         RecipeBookCategory newCategory = Registry.register(Registries.RECIPE_BOOK_CATEGORY, identifier, new RecipeBookCategory());
         categoryRecipes.put(newCategory, new HashSet<>());
+        idToCategoryMap.put(identifier, newCategory);
 
         RecipeBookTabRegistry.register(newCategory, primaryIcon, secondaryIcon);
 
@@ -100,5 +88,9 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
     public boolean isRegisteredCategory(RecipeBookGroup category){
         if(category instanceof RecipeBookCategory category1) return categoryRecipes.containsKey(category1);
         return false;
+    }
+
+    public RecipeBookCategory getCategoryFromId(Identifier categoryId){
+        return idToCategoryMap.get(categoryId);
     }
 }

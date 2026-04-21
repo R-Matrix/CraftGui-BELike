@@ -23,10 +23,8 @@
 package xyz.water.rmatrix.cmod.craftguibelike.utils;
 
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
-import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeSorter;
 import xyz.water.rmatrix.cmod.craftguibelike.sorters.*;
@@ -37,7 +35,7 @@ public class SorterManager {
 
     private static SorterManager INSTANCE;
 
-    private final Map<Identifier, IRecipeSorter> sorters = new LinkedHashMap<>();
+    private static final Map<Identifier, IRecipeSorter> sorters = new LinkedHashMap<>();
     private IRecipeSorter currentSorter;
 
     private SorterManager(){
@@ -53,16 +51,10 @@ public class SorterManager {
         String my_modid = CraftGuiBELike.MOD_ID;
         IRecipeSorter sorter = new DefaultSorter();
         register(my_modid ,sorter);
-        register(my_modid, new MaterialMatchSorter());
-        register(my_modid, new RegistryOrderSorter());
-        register(my_modid, new VanillaFirstSorter());
-        register(my_modid, new ModFirstSorter());
-        register(my_modid, new PinYinSorter());
-        register(my_modid, new ContainGroupSorter());
         if(currentSorter == null) currentSorter = sorter;
     }
 
-    public void register(String modId , @NotNull IRecipeSorter sorter){
+    public static void register(String modId , @NotNull IRecipeSorter sorter){
         Identifier identifier = Identifier.of(modId, sorter.getName());
         sorters.put(identifier, sorter);
     }
@@ -71,21 +63,6 @@ public class SorterManager {
         return this.currentSorter;
     }
 
-    public void setCurrentSorter(Identifier id){
-        this.currentSorter = sorters.get(id);
-    }
-
-    public void setCurrentSorter(String id){
-        this.currentSorter = sorters.get(Identifier.of(id));
-    }
-
-    public void setCurrentSorter(@Nullable IRecipeSorter sorter){
-        this.currentSorter = sorter;
-    }
-
-    public Collection<Identifier> getAvailableSorters() {
-        return sorters.keySet();
-    }
 
     public List<RecipeResultCollection> sort(
             List<RecipeResultCollection> recipes) {
@@ -97,7 +74,6 @@ public class SorterManager {
     }
 
     public void cycleCurrentSorter() {
-
         List<IRecipeSorter> allsorters = new ArrayList<>(sorters.values());
 
         if(allsorters.isEmpty()) return;

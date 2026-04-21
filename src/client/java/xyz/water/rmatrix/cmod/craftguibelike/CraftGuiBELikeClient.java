@@ -8,10 +8,14 @@ import xyz.water.rmatrix.cmod.craftguibelike.api.IEnhancedRecipeBookCategoryAPI;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
 import xyz.water.rmatrix.cmod.craftguibelike.command.ClearFavoriteCommand;
 import xyz.water.rmatrix.cmod.craftguibelike.item.ModItem;
+import xyz.water.rmatrix.cmod.craftguibelike.sorters.*;
+import xyz.water.rmatrix.cmod.craftguibelike.utils.SorterManager;
+
+import static xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike.MOD_ID;
 
 public class CraftGuiBELikeClient implements ClientModInitializer {
 
-	public static final Identifier FAVORITE_CATEGORY_ID = Identifier.of(CraftGuiBELike.MOD_ID, "favorite_category");
+	public static final Identifier FAVORITE_CATEGORY_ID = Identifier.of(MOD_ID, "favorite_category");
 	public static RecipeBookCategory FAVORITE_CATEGORY;
 
 	@Override
@@ -19,6 +23,13 @@ public class CraftGuiBELikeClient implements ClientModInitializer {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		IEnhancedRecipeBookCategoryAPI api = EnhancedRecipeBookCategoryAPIImpl.getINSTANCE();
 		FAVORITE_CATEGORY = api.registerCategory(FAVORITE_CATEGORY_ID, ModItem.FAVORITE_STAR);
+
+		SorterManager.register(MOD_ID, new MaterialMatchSorter());
+		SorterManager.register(MOD_ID, new RegistryOrderSorter());
+		SorterManager.register(MOD_ID, new VanillaFirstSorter());
+		SorterManager.register(MOD_ID, new ModFirstSorter());
+		SorterManager.register(MOD_ID, new PinYinSorter());
+		SorterManager.register(MOD_ID, new ContainGroupSorter());
 
 		ClientCommandRegistrationCallback.EVENT.register(new ClearFavoriteCommand());
 	}

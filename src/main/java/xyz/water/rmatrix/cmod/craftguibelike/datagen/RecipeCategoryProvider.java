@@ -22,8 +22,6 @@
 
 package xyz.water.rmatrix.cmod.craftguibelike.datagen;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -45,8 +43,6 @@ public class RecipeCategoryProvider implements DataProvider {
 
     private final Map<Identifier, RecipeCategoryDefinition> categories = new HashMap<>();
     private final Map<Identifier, List<String>> categoryToRecipes = new HashMap<>();
-
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public RecipeCategoryProvider(FabricDataOutput output, String modid){
         this.output = output;
