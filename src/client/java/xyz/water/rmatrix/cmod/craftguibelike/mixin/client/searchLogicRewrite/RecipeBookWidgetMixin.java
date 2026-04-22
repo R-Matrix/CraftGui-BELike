@@ -25,17 +25,32 @@ package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.searchLogicRewrite;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeGroupButtonWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.recipebook.ClientRecipeBook;
+import net.minecraft.client.search.SearchProvider;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
+import xyz.water.rmatrix.cmod.craftguibelike.utils.favoriteMiscUtils.ClientRecipeBookHelper;
+import xyz.water.rmatrix.cmod.craftguibelike.utils.favoriteMiscUtils.StrictSearchProvider;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Mixin(RecipeBookWidget.class)
 public class RecipeBookWidgetMixin {
@@ -46,30 +61,58 @@ public class RecipeBookWidgetMixin {
 
     //todo : fix me : 自定义分类不能使用搜索
 
+    @Unique
+    private SearchProvider<RecipeResultCollection> strictSearchProvider;
+
+
+    @Shadow
+    private @Nullable TextFieldWidget searchField;
+
+    @Shadow
+    private ClientRecipeBook recipeBook;
+
+    @Inject(method = "initialize", at = @At("TAIL"))
+    private void initStrictSearchProvider(int parentWidth, int parentHeight, MinecraftClient client, boolean narrow, CallbackInfo ci){
+        strictSearchProvider = StrictSearchProvider.buildStrictSearchProvider(ClientRecipeBookHelper.getAllUnmergedRecipes(recipeBook));
+    }
+
 
     @WrapOperation(method = "refreshResults", at = @At(value = "INVOKE",
             target = "Ljava/util/List;removeIf(Ljava/util/function/Predicate;)Z", ordinal = 1))
     private boolean redirectRemoveIf(List<RecipeResultCollection> instance,
                                      Predicate<RecipeResultCollection> predicate,
-                                     Operation<Boolean> original,
-                                     @Local ObjectSet<RecipeResultCollection> objectSet){
+                                     Operation<Boolean> original){
 
         RecipeGroupButtonWidget currentTab1 = this.currentTab;
 
         // todo : flag 启用严格搜索模式
-        if((currentTab1 != null && EnhancedRecipeBookCategoryAPIImpl.getINSTANCE().isRegisteredCategory(currentTab1.getCategory()) || true)){
+//        if((currentTab1 != null && EnhancedRecipeBookCategoryAPIImpl.getINSTANCE().isRegisteredCategory(currentTab1.getCategory()) || true)){
+//
+//            return instance.removeIf(collection ->
+//                    collection.getAllRecipes().stream().noneMatch(entry ->
+//                    objectSet.stream().anyMatch(collection1 ->
+//                            collection1.getAllRecipes().stream().anyMatch(entry1 ->
+//                                    entry1.id().index() == entry.id().index()))));
+//        }
 
-            return instance.removeIf(collection -> {
-                if(!predicate.test(collection)){
-                    return false;
-                }
+        if (this.searchField == null) return false;
 
-                return collection.getAllRecipes().stream().noneMatch(entry ->
-                        objectSet.stream().anyMatch(collection1 ->
-                                collection1.getAllRecipes().stream().anyMatch(entry1 ->
-                                        entry1.id() == entry.id())));
-            });
+        String string = this.searchField.getText();
+
+        if(EnhancedRecipeBookCategoryAPIImpl.getINSTANCE().isRegisteredCategory(currentTab1.getCategory()) || true){
+
+            System.out.println("strict search!!!");
+
+            Set<RecipeResultCollection> matches = new HashSet<>(strictSearchProvider.findAll(string.toLowerCase(Locale.ROOT)));
+            return instance.removeIf(collection ->
+                    collection.getAllRecipes().stream().noneMatch(entry ->
+                            matches.stream().anyMatch(collection1 ->
+                                    collection1.getAllRecipes().stream().anyMatch(entry1 ->
+                                            entry1.id().equals(entry.id())))));
+
         }
+z
+
 
         return original.call(instance, predicate);
     }
