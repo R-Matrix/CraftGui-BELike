@@ -1,6 +1,7 @@
 {
   "craftgui-belike.button.sort.current" : "current sort mode:\n",
   "craftgui-belike.button.mouse_scroll.current" : "mouseScrollEnable:",
+  "craftgui-belike.button.strict_search.current" : "Enable strict search:",
   "craftgui-belike.sort.material_match_sort" : "material_match_sort",
   "craftgui-belike.sort.default_sort" : "default_sort(first_char)",
   "craftgui-belike.sort.register_order_sort" : "register_order_sort",

@@ -38,6 +38,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.water.rmatrix.cmod.craftguibelike.button.MouseScrollEnableButton;
 import xyz.water.rmatrix.cmod.craftguibelike.button.SortButton;
+import xyz.water.rmatrix.cmod.craftguibelike.button.StrictSearchButton;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.RecipeBookButtonManager;
 
 @Mixin(RecipeBookResults.class)
@@ -52,7 +53,8 @@ public abstract class RecipeBookResultMixin {
     private void addSortButton(MinecraftClient client, int parentLeft, int parentTop, CallbackInfo ci){
         recipeBookButtonManager.resetWith(
                 new SortButton(this.recipeBookWidget ,parentLeft + 10, parentTop + 137),
-                new MouseScrollEnableButton(parentLeft + 20, parentTop + 137)
+                new MouseScrollEnableButton(parentLeft + 20, parentTop + 137),
+                new StrictSearchButton(this.recipeBookWidget ,parentLeft + 30, parentTop + 137)
         );
     }
 

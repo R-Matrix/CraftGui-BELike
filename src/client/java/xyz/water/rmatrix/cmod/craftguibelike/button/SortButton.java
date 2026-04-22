@@ -33,7 +33,7 @@ public class SortButton extends AbstractMyRecipeBookResultButton {
 
     public SortButton(RecipeBookWidget<?> parent, int x, int y) {
         super(x, y, 10, 10,
-                Text.literal("z"),      //候选图标: ↹
+                Text.literal("≺"),      //候选图标: ↹, z
                 button -> {
                     SorterManager.getINSTANCE().cycleCurrentSorter();
                     button.setTooltip(Tooltip.of(getTooltipText()));

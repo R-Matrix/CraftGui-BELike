@@ -34,6 +34,10 @@ import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.search.SearchProvider;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.recipe.NetworkRecipeId;
+import net.minecraft.recipe.RecipeDisplayEntry;
+import net.minecraft.recipe.RecipeFinder;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -42,13 +46,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
+import xyz.water.rmatrix.cmod.craftguibelike.button.StrictSearchButton;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.favoriteMiscUtils.ClientRecipeBookHelper;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.favoriteMiscUtils.StrictSearchProvider;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -86,34 +88,44 @@ public class RecipeBookWidgetMixin {
         RecipeGroupButtonWidget currentTab1 = this.currentTab;
 
         // todo : flag 启用严格搜索模式
-//        if((currentTab1 != null && EnhancedRecipeBookCategoryAPIImpl.getINSTANCE().isRegisteredCategory(currentTab1.getCategory()) || true)){
-//
-//            return instance.removeIf(collection ->
-//                    collection.getAllRecipes().stream().noneMatch(entry ->
-//                    objectSet.stream().anyMatch(collection1 ->
-//                            collection1.getAllRecipes().stream().anyMatch(entry1 ->
-//                                    entry1.id().index() == entry.id().index()))));
-//        }
-
         if (this.searchField == null) return false;
+
+        PlayerEntity player = MinecraftClient.getInstance().player;
+        if(player == null) return false;
+
+        RecipeFinder finder = new RecipeFinder();
+        player.getInventory().populateRecipeFinder(finder);
 
         String string = this.searchField.getText();
 
-        if(EnhancedRecipeBookCategoryAPIImpl.getINSTANCE().isRegisteredCategory(currentTab1.getCategory()) || true){
+        boolean bl = EnhancedRecipeBookCategoryAPIImpl.getINSTANCE().isRegisteredCategory(currentTab1.getCategory());
+        if(StrictSearchButton.isStrictSearchMode() || bl){
 
-            System.out.println("strict search!!!");
+            Set<NetworkRecipeId> matchesId = strictSearchProvider
+                    .findAll(string.toLowerCase(Locale.ROOT)).stream()
+                    .flatMap(collection -> collection.getAllRecipes().stream())
+                    .map(RecipeDisplayEntry::id)
+                    .collect(Collectors.toSet());
 
-            Set<RecipeResultCollection> matches = new HashSet<>(strictSearchProvider.findAll(string.toLowerCase(Locale.ROOT)));
-            return instance.removeIf(collection ->
-                    collection.getAllRecipes().stream().noneMatch(entry ->
-                            matches.stream().anyMatch(collection1 ->
-                                    collection1.getAllRecipes().stream().anyMatch(entry1 ->
-                                            entry1.id().equals(entry.id())))));
+            var iterator = instance.listIterator();
+            while (iterator.hasNext()){
+                RecipeResultCollection collection = iterator.next();
+
+                List<RecipeDisplayEntry> matchesEntry = collection.getAllRecipes().stream()
+                        .filter(entry -> matchesId.contains(entry.id())).toList();
+
+                if(matchesEntry.isEmpty()) iterator.remove();
+                else if(matchesEntry.size() != collection.getAllRecipes().size()){
+                    RecipeResultCollection collection1 = new RecipeResultCollection(matchesEntry);
+                    collection1.populateRecipes(finder, i -> true);
+                    iterator.remove();
+                    iterator.add(collection1);
+                }
+            }
+
+            return true;
 
         }
-z
-
-
         return original.call(instance, predicate);
     }
 }

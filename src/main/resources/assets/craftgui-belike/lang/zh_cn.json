@@ -1,6 +1,7 @@
 {
   "craftgui-belike.button.sort.current": "当前排序模式:\n",
   "craftgui-belike.button.mouse_scroll.current": "允许滚轮翻页:",
+  "craftgui-belike.button.strict_search.current" : "启用严格搜索模式: ",
   "craftgui-belike.sort.material_match_sort": "材料匹配",
   "craftgui-belike.sort.default_sort": "首字母顺序",
   "craftgui-belike.sort.register_order_sort": "注册表顺序",

@@ -16,8 +16,7 @@
     "mouseScollOnRecipeBool.RecipeBookScreenMixin",
     "mouseScollOnRecipeBool.RecipeBookWidgetAccess",
     "searchLogicRewrite.RecipeBookWidgetMixin",
-    "sorterAndSortButton.RecipeBookWidgetMixin",
-    "strictSearchWithoutGroup.ClientRecipeBookMixin"
+    "sorterAndSortButton.RecipeBookWidgetMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -22,34 +22,34 @@
 
 package xyz.water.rmatrix.cmod.craftguibelike.button;
 
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
-public class MouseScrollEnableButton extends AbstractMyRecipeBookResultButton {
+public class StrictSearchButton extends AbstractMyRecipeBookResultButton{
 
-    private static boolean enableMouseScroll = true;
+    private static boolean strictSearchMode = false;
 
-
-    public MouseScrollEnableButton(int x, int y) {
+    public StrictSearchButton(RecipeBookWidget<?> parent, int x, int y) {
         super(x, y, 10, 10,
-                Text.literal("↕"),
+                Text.literal("†"),
                 button -> {
-                    enableMouseScroll = !enableMouseScroll;
+                    strictSearchMode = !strictSearchMode;
                     button.setTooltip(Tooltip.of(getTooltipText()));
+                    parent.refresh();
                 },
                 ButtonWidget.DEFAULT_NARRATION_SUPPLIER);
         this.setTooltip(Tooltip.of(getTooltipText()));
     }
 
-
-    public static boolean isEnableMouseScroll() {
-        return enableMouseScroll;
+    public static boolean isStrictSearchMode() {
+        return strictSearchMode;
     }
 
     private static Text getTooltipText() {
-        return Text.translatable("craftgui-belike.button.mouse_scroll.current").append(
-                Text.literal(enableMouseScroll ? " §a✓" : " §c✗")
+        return Text.translatable("craftgui-belike.button.strict_search.current").append(
+                Text.literal(strictSearchMode ? " §a✓" : " §c✗")
         );
     }
 }

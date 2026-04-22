@@ -32,7 +32,7 @@ import java.util.List;
 public class RecipeBookButtonManager {
 
     private static RecipeBookButtonManager INSTANCE;
-    private List<AbstractMyRecipeBookResultButton> buttonList = new ArrayList<>();
+    private final List<AbstractMyRecipeBookResultButton> buttonList = new ArrayList<>();
 
     public static RecipeBookButtonManager getINSTANCE(){
         if(INSTANCE == null) INSTANCE = new RecipeBookButtonManager();
