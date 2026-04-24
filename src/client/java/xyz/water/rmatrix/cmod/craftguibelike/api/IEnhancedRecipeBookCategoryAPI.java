@@ -25,6 +25,7 @@ package xyz.water.rmatrix.cmod.craftguibelike.api;
 import net.minecraft.item.Item;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,13 +47,17 @@ public interface IEnhancedRecipeBookCategoryAPI {
 
     RecipeBookCategory registerCategory(Identifier categoryId, Item primaryIcon, @Nullable Item secondaryIcon);
 
-    void addRecipeToCategory(RecipeBookCategory category, Identifier recipeId);
-
-    void removeRecipeFromCategory(RecipeBookCategory category, Identifier recipeId);
-
-    Set<Identifier> getRecipesUnderCategory(RecipeBookCategory category);
-
     boolean isRegisteredCategory(RecipeBookGroup category);
 
-    RecipeBookCategory getCategoryFromId(Identifier categoryId);
+    boolean isRegisteredCategory(Identifier categoryId);
+
+    RecipeBookCategory getCategoryFromCategoryId(Identifier categoryId);
+
+    Text getCategoryShowName(RecipeBookCategory category);
+
+    void addTextToCategory(Identifier categoryId, Text displayName);
+
+    default Text getCategoryShowName(Identifier categoryId){
+        return getCategoryShowName(getCategoryFromCategoryId(categoryId));
+    }
 }

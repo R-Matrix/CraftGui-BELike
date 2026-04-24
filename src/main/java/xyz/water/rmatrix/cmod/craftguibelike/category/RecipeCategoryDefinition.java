@@ -33,15 +33,13 @@ public record RecipeCategoryDefinition(
         Identifier id,
         Text displayName,
         Item primaryIcon,
-        @Nullable Item secondaryIcon,
-        int priority) {
+        @Nullable Item secondaryIcon) {
 
     public static class Builder {
         private Identifier id;
         private Text displayName;
         private Item primaryIcon;
         private Item secondaryIcon = null;
-        private int priority = 50;
 
         public Builder id(Identifier id) {
             this.id = id;
@@ -78,16 +76,12 @@ public record RecipeCategoryDefinition(
             return this;
         }
 
-        public Builder priority(int priority) {
-            this.priority = priority;
-            return this;
-        }
 
         public RecipeCategoryDefinition build() {
             if (id == null) throw new RuntimeException("Category ID should be set");
             if (displayName == null) displayName = Text.literal(id.getPath());
             if (primaryIcon == null) throw new RuntimeException("Primary Icon should be set");
-            return new RecipeCategoryDefinition(id, displayName, primaryIcon, secondaryIcon, priority);
+            return new RecipeCategoryDefinition(id, displayName, primaryIcon, secondaryIcon);
         }
     }
 }

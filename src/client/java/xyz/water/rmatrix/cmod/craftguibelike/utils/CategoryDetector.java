@@ -24,11 +24,13 @@ package xyz.water.rmatrix.cmod.craftguibelike.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.water.rmatrix.cmod.craftguibelike.category.RecipeCategoryDefinition;
+import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,12 +41,11 @@ public class CategoryDetector {
     private static final Logger LOGGER = LoggerFactory.getLogger("CategoryDetector");
 
     private final List<PatternRule> patternRules = new ArrayList<>();
+    private final EnhancedRecipeBookCategoryAPIImpl recipeBookCategoryAPI = EnhancedRecipeBookCategoryAPIImpl.getINSTANCE();
 
     // 配方 -> 分类
     private static final Map<Identifier, Identifier> categoryMapping = new HashMap<>();
     private static CategoryDetector INSTANCE;
-
-    private final Map<Identifier, RecipeCategoryDefinition> registeredCategory = new HashMap<>();
 
     public void loadConfig(String modId, InputStream configStream){
         try {
@@ -107,18 +108,17 @@ public class CategoryDetector {
     }
 
     public void registerCategoryFromConfig(Identifier id, JsonObject data){
-        RecipeCategoryDefinition.Builder builder = new RecipeCategoryDefinition.Builder().id(id);
 
-        if(data.has("display_name"  )) builder.displayName  (data.get("display_name").getAsString());
-        if(data.has("primary_icon"  )) builder.primaryIcon  (Registries.ITEM.get(Identifier.of(data.getAsString())));
-        if(data.has("secondary_icon")) builder.secondaryIcon(Registries.ITEM.get(Identifier.of(data.getAsString())));
-        if(data.has("priority"      )) builder.priority     (data.get("priority").getAsInt());
+        Text displayName = null;
+        Item primaryIcon = null;
+        Item secondaryIcon = null;
 
-        registeredCategory.put(id, builder.build());
-    }
+        if(data.has("display_name"  )) displayName   = Text.translatable(data.get("display_name").getAsString());
+        if(data.has("primary_icon"  )) primaryIcon   = (Registries.ITEM.get(Identifier.of(data.getAsString())));
+        if(data.has("secondary_icon")) secondaryIcon = (Registries.ITEM.get(Identifier.of(data.getAsString())));
 
-    public Map<Identifier, RecipeCategoryDefinition> getRegisteredCategory() {
-        return registeredCategory;
+        recipeBookCategoryAPI.registerCategory(id, primaryIcon, secondaryIcon);
+        recipeBookCategoryAPI.addTextToCategory(id, displayName);
     }
 
     public record PatternRule(Pattern pattern, Identifier categoryId){}

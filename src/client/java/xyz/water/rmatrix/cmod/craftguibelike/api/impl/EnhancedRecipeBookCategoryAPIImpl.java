@@ -27,20 +27,25 @@ import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IEnhancedRecipeBookCategoryAPI;
+import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeManager;
 import xyz.water.rmatrix.cmod.craftguibelike.registry.RecipeBookTabRegistry;
+import xyz.water.rmatrix.cmod.craftguibelike.utils.CategoryDetector;
 
 import java.util.*;
 
-public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCategoryAPI {
+public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCategoryAPI, IRecipeManager {
 
     private static EnhancedRecipeBookCategoryAPIImpl INSTANCE;
 
-    private final Map<RecipeBookCategory, Set<Identifier>> categoryRecipes = new LinkedHashMap<>();
+    private final Map<RecipeBookCategory, Set<Identifier>> categoryRecipes = new LinkedHashMap<>(); // 配方分类 -> 配方 id 集合
 
-    private final Map<Identifier, RecipeBookCategory> idToCategoryMap = new HashMap<>();
+    private final Map<Identifier, RecipeBookCategory> idToCategoryMap = new HashMap<>(); // 配方分类 id -> 配方分类
+
+    private final Map<RecipeBookCategory, Text> categoryShowNameMap = new HashMap<>(); // 配方id -> 配方名称展示
 
 
     private EnhancedRecipeBookCategoryAPIImpl(){}
@@ -90,7 +95,48 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
         return false;
     }
 
-    public RecipeBookCategory getCategoryFromId(Identifier categoryId){
+    public boolean isRegisteredCategory(Identifier categoryId){
+        return idToCategoryMap.containsKey(categoryId);
+    }
+
+    public RecipeBookCategory getCategoryFromCategoryId(Identifier categoryId){
         return idToCategoryMap.get(categoryId);
+    }
+
+    @Override
+    public RecipeBookCategory getCategoryFromRecipeId(Identifier recipeId) {
+        for(var category : categoryRecipes.entrySet()){
+            if(category.getValue().contains(recipeId)){
+                return category.getKey();
+            }
+        }
+
+        Optional<Identifier> catId = CategoryDetector.getInstance().getCategory(recipeId);
+        if(catId.isPresent()){
+            RecipeBookCategory category = idToCategoryMap.get(catId.get());
+            if(category != null){
+                categoryRecipes.get(category).add(recipeId);
+                return category;
+            }
+        }
+
+        return null;
+    }
+
+
+    @Override
+    public Text getCategoryShowName(RecipeBookCategory category) {
+        if(isRegisteredCategory(category)){
+            return categoryShowNameMap.get(category);
+        }
+        throw new RuntimeException("Recipe Category Not Found!");
+    }
+
+    @Override
+    public void addTextToCategory(Identifier categoryId, Text displayName){
+        if(idToCategoryMap.containsKey(categoryId)){
+            categoryShowNameMap.put(idToCategoryMap.get(categoryId), displayName);
+        }
+        throw new RuntimeException("Recipe Category Not Found!");
     }
 }

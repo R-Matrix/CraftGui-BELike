@@ -2,6 +2,7 @@ package xyz.water.rmatrix.cmod.craftguibelike;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.minecraft.client.recipebook.ClientRecipeManager;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.util.Identifier;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IEnhancedRecipeBookCategoryAPI;
@@ -9,7 +10,9 @@ import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategory
 import xyz.water.rmatrix.cmod.craftguibelike.command.ClearFavoriteCommand;
 import xyz.water.rmatrix.cmod.craftguibelike.item.ModItem;
 import xyz.water.rmatrix.cmod.craftguibelike.sorters.*;
+import xyz.water.rmatrix.cmod.craftguibelike.utils.ClientCategoryManager;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.SorterManager;
+import xyz.water.rmatrix.cmod.craftguibelike.utils.favoriteMiscUtils.ClientRecipeBookHelper;
 
 import static xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike.MOD_ID;
 

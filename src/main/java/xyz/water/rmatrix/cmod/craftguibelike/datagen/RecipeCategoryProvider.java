@@ -98,7 +98,6 @@ public class RecipeCategoryProvider implements DataProvider {
             categoryJson.addProperty("displayName", extractTranslationKey(definition.displayName()));
             categoryJson.addProperty("primaryIcon", definition.primaryIcon().getTranslationKey());
             if(definition.secondaryIcon() != null) categoriesJson.addProperty("secondaryIcon", definition.secondaryIcon().getTranslationKey());
-            categoryJson.addProperty("priority", definition.priority());
 
             categoriesJson.add(categoryId.getPath(), categoryJson);
 

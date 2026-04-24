@@ -52,11 +52,6 @@ public abstract class AnimatedResultButtonMixin extends ClickableWidget {
     @Shadow
     public abstract int getWidth();
 
-    @ModifyReturnValue(method = "isValidClickButton", at = @At("RETURN"))
-    private boolean ModifyValidaButton(boolean original, int button){
-        return original || button == 2;
-    }
-
     @Inject(method = "renderWidget", at = @At("TAIL"))
     private void addStarToFavoriteRecipe(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci){
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
