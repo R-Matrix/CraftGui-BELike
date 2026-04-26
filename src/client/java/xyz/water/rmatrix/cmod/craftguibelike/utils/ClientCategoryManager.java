@@ -22,10 +22,8 @@
 
 package xyz.water.rmatrix.cmod.craftguibelike.utils;
 
-import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
