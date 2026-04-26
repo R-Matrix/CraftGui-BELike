@@ -134,9 +134,9 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
 
     @Override
     public void addTextToCategory(Identifier categoryId, Text displayName){
-        if(idToCategoryMap.containsKey(categoryId)){
-            categoryShowNameMap.put(idToCategoryMap.get(categoryId), displayName);
-        }
-        throw new RuntimeException("Recipe Category Not Found!");
+
+        if(!idToCategoryMap.containsKey(categoryId)) throw new RuntimeException("Recipe Category Not Found!");
+
+        categoryShowNameMap.put(idToCategoryMap.get(categoryId), displayName);
     }
 }

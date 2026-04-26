@@ -22,20 +22,29 @@
 
 package xyz.water.rmatrix.cmod.craftguibelike.utils;
 
+import com.google.gson.JsonObject;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
-public class ClientCategoryManager {
+public class ClientCategoryManager implements IdentifiableResourceReloadListener {
     private static ClientCategoryManager INSTANCE;
-    private final Logger LOGGER = LoggerFactory.getLogger("ClientCategoryManager");
+    private final Logger LOGGER = LoggerFactory.getLogger("CraftGui-BELike$ClientCategoryManager");
+    private final Identifier LISTENER_ID = Identifier.of(CraftGuiBELike.MOD_ID, "category_loader");
     private final CategoryDetector detector = new CategoryDetector();
 
     public static ClientCategoryManager getInstance() {
@@ -43,15 +52,14 @@ public class ClientCategoryManager {
         return INSTANCE;
     }
 
-    public void loadAllCategoryConfigs() {
+    public void reloadAllCategoryConfigs(ResourceManager manager) {
+        detector.clear();
         for(String modid : FabricLoader.getInstance().getAllMods()
                 .stream().map(mod -> mod.getMetadata().getId()).toList()){
             Identifier configId = Identifier.of(modid, "recipe_categories.json");
-            Optional<Resource> resource = MinecraftClient.getInstance().getResourceManager()
-                    .getResource(configId);
+            Optional<Resource> resource = manager.getResource(configId);
             if(resource.isPresent()){
                 try(InputStream stream = resource.get().getInputStream()){
-                    detector.loadConfig(modid, stream);
                     LOGGER.info("Load recipe categories from {}", modid);
                 }
                 catch (IOException e){
@@ -66,5 +74,30 @@ public class ClientCategoryManager {
      */
     public Optional<Identifier> getCategory(Identifier recipeId) {
         return detector.getCategory(recipeId);
+    }
+
+    @Override
+    public Identifier getFabricId() {
+        return LISTENER_ID;
+    }
+
+    @Override
+    public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
+        return CompletableFuture.runAsync(() -> reloadAllCategoryConfigs(manager), prepareExecutor).thenCompose(synchronizer::whenPrepared);
+    }
+
+    public void loadAndRegisterAllCategories(){
+        for(var mod : FabricLoader.getInstance().getAllMods()){
+            String modId = mod.getMetadata().getId();
+            Optional<Path> configPath = mod.findPath("assets/" + modId + "/recipe_categories/recipe_categories.json");
+            if(configPath.isPresent()){
+                try (InputStream stream = Files.newInputStream(configPath.get())){
+                    detector.loadConfig(modId, stream);
+                }
+                catch (Exception e){
+                    LOGGER.error("Failed to load categories from mod: {}", modId, e);
+                }
+            }
+        }
     }
 }

@@ -2,8 +2,10 @@ package xyz.water.rmatrix.cmod.craftguibelike;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.recipebook.ClientRecipeManager;
 import net.minecraft.recipe.book.RecipeBookCategory;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IEnhancedRecipeBookCategoryAPI;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
@@ -35,5 +37,9 @@ public class CraftGuiBELikeClient implements ClientModInitializer {
 		SorterManager.register(MOD_ID, new ContainGroupSorter());
 
 		ClientCommandRegistrationCallback.EVENT.register(new ClearFavoriteCommand());
+
+		ClientCategoryManager.getInstance().loadAndRegisterAllCategories();
+
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ClientCategoryManager.getInstance());
 	}
 }

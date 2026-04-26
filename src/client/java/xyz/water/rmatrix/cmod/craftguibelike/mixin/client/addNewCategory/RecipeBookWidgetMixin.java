@@ -36,6 +36,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike;
 import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELikeClient;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
 
@@ -67,7 +68,7 @@ public abstract class RecipeBookWidgetMixin {
             RecipeGroupButtonWidget instance,
             ClientRecipeBook recipeBook,
             Operation<Boolean> original,
-            @Local(argsOnly = true) boolean filteringCraftable){
+            @Local(argsOnly = true) boolean filteringCraftable){;
 
         if(instance.getCategory() instanceof RecipeBookCategory category){
             Identifier id = Registries.RECIPE_BOOK_CATEGORY.getId(category);

@@ -86,6 +86,10 @@ public class CategoryDetector {
         return INSTANCE;
     }
 
+    public void clear(){
+
+    }
+
     /**
      * 检测单个物品分类
      *
@@ -114,8 +118,8 @@ public class CategoryDetector {
         Item secondaryIcon = null;
 
         if(data.has("display_name"  )) displayName   = Text.translatable(data.get("display_name").getAsString());
-        if(data.has("primary_icon"  )) primaryIcon   = (Registries.ITEM.get(Identifier.of(data.getAsString())));
-        if(data.has("secondary_icon")) secondaryIcon = (Registries.ITEM.get(Identifier.of(data.getAsString())));
+        if(data.has("primary_icon"  )) primaryIcon   = (Registries.ITEM.get(Identifier.of(data.get("primary_icon").getAsString())));
+        if(data.has("secondary_icon")) secondaryIcon = (Registries.ITEM.get(Identifier.of(data.get("secondary_icon").getAsString())));
 
         recipeBookCategoryAPI.registerCategory(id, primaryIcon, secondaryIcon);
         recipeBookCategoryAPI.addTextToCategory(id, displayName);
