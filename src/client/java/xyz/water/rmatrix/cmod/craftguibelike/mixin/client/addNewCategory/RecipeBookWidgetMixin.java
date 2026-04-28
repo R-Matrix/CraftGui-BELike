@@ -43,32 +43,24 @@ import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategory
 public abstract class RecipeBookWidgetMixin {
 
     @Unique
-    private final int customButton_k = 27;
+    private static final int customButton_k = 27; // tab按钮纵向间距
     @Shadow
     private int parentHeight;
-    @Unique
-    private final int customButton_j = (this.parentHeight - 166) / 2 - 30;
     @Shadow
     private int leftOffset;
     @Shadow
     private int parentWidth;
-    @Unique
-    private final int customButton_i =  (this.parentWidth - 147) / 2 - this.leftOffset + 30;
     @Shadow
     private ClientRecipeBook recipeBook;
     @Unique
-    private int customButton_l = 0;
-    @Unique
-    private int customButton_r = 0;
-    @Unique
-    private int customButton_hasShownCount = 0;
+    private int customButton_hasShownCount = 0; // 已显示的自定义按钮数量, 用于计算Y偏移
 
     @WrapOperation(method = "refreshTabButtons", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/recipebook/RecipeGroupButtonWidget;hasKnownRecipes(Lnet/minecraft/client/recipebook/ClientRecipeBook;)Z"))
     private boolean setFavoriteDisplayAlways(
             RecipeGroupButtonWidget instance,
             ClientRecipeBook recipeBook,
             Operation<Boolean> original,
-            @Local(argsOnly = true) boolean filteringCraftable){
+            boolean filteringCraftable){
 
         if(instance.getCategory() instanceof RecipeBookCategory category){
             Identifier id = Registries.RECIPE_BOOK_CATEGORY.getId(category);
@@ -78,11 +70,14 @@ public abstract class RecipeBookWidgetMixin {
                 return true;
             }
 
-            else if(apiImpl.isRegisteredCategory(id)){
-                if(apiImpl.getRecipesUnderCategory(category).isEmpty()) return false;
-                instance.setPosition(customButton_i + customButton_k * customButton_l++, customButton_j);
-                instance.checkForNewRecipes(this.recipeBook, filteringCraftable);
+            if(apiImpl.isRegisteredCategory(id)){
+//                if(apiImpl.getRecipesUnderCategory(category).isEmpty()) return false;
+                System.out.println("is not empty");
+//                instance.setPosition(customButton_i , customButton_j);
+//                instance.checkForNewRecipes(this.recipeBook, filteringCraftable);
+                instance.visible = true;
                 customButton_hasShownCount++;
+                return false;
             }
         }
         return original.call(instance, recipeBook);
