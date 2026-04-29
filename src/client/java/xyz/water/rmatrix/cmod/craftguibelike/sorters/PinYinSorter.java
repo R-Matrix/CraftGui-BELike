@@ -22,11 +22,13 @@
 
 package xyz.water.rmatrix.cmod.craftguibelike.sorters;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeDisplayEntry;
 import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.context.ContextParameterMap;
 import net.minecraft.util.context.ContextType;
@@ -72,8 +74,11 @@ public class PinYinSorter implements IRecipeSorter {
 
     private String getPinyin(RecipeResultCollection collection) throws BadHanyuPinyinOutputFormatCombination {
         for (RecipeDisplayEntry recipe : collection.getAllRecipes()) {
-            ItemStack output = recipe.display().result().getFirst(new ContextParameterMap.Builder().build(new ContextType.Builder().build()));
-            if (!output.isEmpty()) {
+            ItemStack output = null;
+            if (MinecraftClient.getInstance().world != null) {
+                output = recipe.display().result().getFirst(SlotDisplayContexts.createParameters(MinecraftClient.getInstance().world));
+            }
+            if (output != null && !output.isEmpty()) {
                 String localizedName = output.getName().getString();
                 return toPinyin(localizedName);
             }

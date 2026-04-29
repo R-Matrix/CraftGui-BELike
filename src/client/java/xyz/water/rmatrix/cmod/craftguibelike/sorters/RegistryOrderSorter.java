@@ -22,10 +22,12 @@
 
 package xyz.water.rmatrix.cmod.craftguibelike.sorters;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeDisplayEntry;
+import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.context.ContextParameterMap;
@@ -55,8 +57,11 @@ public class RegistryOrderSorter implements IRecipeSorter {
 
     private int getRegistryItemId(RecipeResultCollection collection, Registry<Item> registry){
         for (RecipeDisplayEntry recipe : collection.getAllRecipes()) {
-            ItemStack output = recipe.display().result().getFirst(new ContextParameterMap.Builder().build(new ContextType.Builder().build()));
-            if(!output.isEmpty()){
+            ItemStack output = null;
+            if (MinecraftClient.getInstance().world != null) {
+                output = recipe.display().result().getFirst(SlotDisplayContexts.createParameters(MinecraftClient.getInstance().world));
+            }
+            if (output != null && !output.isEmpty()) {
                 return registry.getRawId(output.getItem());
             }
         }

@@ -28,6 +28,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
@@ -156,13 +157,16 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
         List<RecipeResultCollection> recipeResultCollections = MinecraftClient.getInstance().player.getRecipeBook().getOrderedResults();
 
         for(RecipeResultCollection collection : recipeResultCollections){
-            for(var entry : collection.getAllRecipes()){
-                ItemStack output = entry.display().result().getFirst(
-                        new ContextParameterMap.Builder().build(new ContextType.Builder().build()));
-                if(output == null) continue;
+            for(var entry : collection.getAllRecipes()) {
+                ItemStack output = null;
+                if (MinecraftClient.getInstance().world != null) {
+                    output = entry.display().result().getFirst(
+                            SlotDisplayContexts.createParameters(MinecraftClient.getInstance().world));
+                }
+                if (output == null) continue;
                 Identifier id = Registries.ITEM.getId(output.getItem());
                 var category = getCategoryFromRecipeId(id);
-                if(category == null) continue;
+                if (category == null) continue;
                 categoryRecipes.get(category).add(id);
             }
         }

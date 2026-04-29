@@ -22,9 +22,11 @@
 
 package xyz.water.rmatrix.cmod.craftguibelike.sorters;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeDisplayEntry;
+import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.util.context.ContextParameterMap;
 import net.minecraft.util.context.ContextType;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeSorter;
@@ -50,9 +52,12 @@ public abstract class AbstractItemNamespaceSorter implements IRecipeSorter {
     protected abstract boolean shouldComeFirst(String namespace);
 
     private String getNamespace(RecipeResultCollection collection){
-        for(RecipeDisplayEntry recipe : collection.getAllRecipes()){
-            ItemStack output = recipe.display().result().getFirst(new ContextParameterMap.Builder().build(new ContextType.Builder().build()));
-            if(!output.isEmpty()){
+        for(RecipeDisplayEntry recipe : collection.getAllRecipes()) {
+            ItemStack output = null;
+            if (MinecraftClient.getInstance().world != null) {
+                output = recipe.display().result().getFirst(SlotDisplayContexts.createParameters(MinecraftClient.getInstance().world));
+            }
+            if (output != null && !output.isEmpty()) {
                 return output.getCreatorNamespace();
             }
         }

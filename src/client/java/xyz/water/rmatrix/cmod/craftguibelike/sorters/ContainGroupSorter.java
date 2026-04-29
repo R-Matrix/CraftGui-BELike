@@ -27,6 +27,7 @@ import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.recipe.RecipeDisplayEntry;
 import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.util.context.ContextParameterMap;
 import net.minecraft.util.context.ContextType;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeSorter;
@@ -88,7 +89,10 @@ public class ContainGroupSorter implements IRecipeSorter {
 
     private String getRecipeName(RecipeDisplayEntry recipe) {
 
-        return recipe.getStacks(new ContextParameterMap.Builder().build(new ContextType.Builder().build()))
-                .getFirst().getItem().getName().getString();
+        if (MinecraftClient.getInstance().world != null) {
+            return recipe.getStacks(SlotDisplayContexts.createParameters(MinecraftClient.getInstance().world))
+                    .getFirst().getItem().getName().getString();
+        }
+        return "";
     }
 }
