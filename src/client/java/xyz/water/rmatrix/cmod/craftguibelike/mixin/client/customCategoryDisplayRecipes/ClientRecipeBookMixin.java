@@ -24,36 +24,59 @@ package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.customCategoryDisplay
 
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookType;
+import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.book.RecipeBookGroup;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.context.ContextParameterMap;
-import net.minecraft.util.context.ContextType;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mixin(ClientRecipeBook.class)
 public class ClientRecipeBookMixin {
-//
-//    @ModifyReturnValue(method = "getResultsForCategory", at = @At("RETURN"))
-//    private List<RecipeResultCollection> modifyReturnRecipes(
-//            List<RecipeResultCollection> original, RecipeBookGroup category){
-//
-//        if(category instanceof RecipeBookType)  return original;
-//
-//        return original.stream().filter(
-//                collection -> {
-//                    var category1 = EnhancedRecipeBookCategoryAPIImpl.getINSTANCE().getCategoryFromRecipeId(
-//                            Identifier.of(collection.getAllRecipes().getFirst().display().result()
-//                                    .getFirst(new ContextParameterMap.Builder().build(new ContextType.Builder().build()))
-//                                    .getItem().toString()));
-//                    return category1 == null || category1.equals(category);
-//                }
-//        ).toList();
-//    }
+
+    @Unique
+    private final EnhancedRecipeBookCategoryAPIImpl enhancedRecipeBookCategoryAPI = EnhancedRecipeBookCategoryAPIImpl.getINSTANCE();
+
+
+    @ModifyReturnValue(method = "getResultsForCategory", at = @At("RETURN"))
+    private List<RecipeResultCollection> modifyReturnRecipes(
+            List<RecipeResultCollection> original, RecipeBookGroup category){
+
+        if(category instanceof RecipeBookType) {
+            return original;
+        }
+
+        if(!(category instanceof RecipeBookCategory cat)) return original;
+
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+
+        if(player == null) return original;
+
+        RecipeFinder finder = new RecipeFinder();
+
+        player.getInventory().populateRecipeFinder(finder);
+
+        if(!enhancedRecipeBookCategoryAPI.isRegisteredCategory(cat)){
+            return original.stream().filter(collection -> !enhancedRecipeBookCategoryAPI.isEntirelyCustom(collection)).toList();
+        }
+        else{
+            enhancedRecipeBookCategoryAPI.refreshClientDisplayEntries();
+            return enhancedRecipeBookCategoryAPI.getEntriesUnderCategory(cat).stream()
+                    .map(entry -> {
+                         RecipeResultCollection collection = new RecipeResultCollection(List.of(entry));
+                         collection.populateRecipes(finder, k -> true);
+                         return collection;
+                    })
+                    .toList();
+        }
+    }
 }

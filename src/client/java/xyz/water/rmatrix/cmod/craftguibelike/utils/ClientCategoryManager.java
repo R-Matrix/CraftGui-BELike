@@ -44,7 +44,7 @@ public class ClientCategoryManager implements IdentifiableResourceReloadListener
     private static ClientCategoryManager INSTANCE;
     private final Logger LOGGER = LoggerFactory.getLogger("CraftGui-BELike$ClientCategoryManager");
     private final Identifier LISTENER_ID = Identifier.of(CraftGuiBELike.MOD_ID, "category_loader");
-    private final CategoryDetector detector = new CategoryDetector();
+    private final CategoryDetector detector = CategoryDetector.getInstance();
 
     public static ClientCategoryManager getInstance() {
         if(INSTANCE == null) INSTANCE = new ClientCategoryManager();
@@ -81,7 +81,7 @@ public class ClientCategoryManager implements IdentifiableResourceReloadListener
             reloadAllCategoryConfigs(manager);
             var api = EnhancedRecipeBookCategoryAPIImpl.getINSTANCE();
             api.refreshStorgeMap();
-        }, prepareExecutor).thenCompose(synchronizer::whenPrepared);
+        }, applyExecutor).thenCompose(synchronizer::whenPrepared);
     }
 
     /**

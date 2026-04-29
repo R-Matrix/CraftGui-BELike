@@ -24,26 +24,31 @@ package xyz.water.rmatrix.cmod.craftguibelike.api.impl;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.RecipeDisplayEntry;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.client.recipebook.RecipeBookType;
 import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.context.ContextParameterMap;
-import net.minecraft.util.context.ContextType;
 import org.jetbrains.annotations.Nullable;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IEnhancedRecipeBookCategoryAPI;
+import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeIdToDisplayEntryAdapt;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeManager;
+import xyz.water.rmatrix.cmod.craftguibelike.mixin.client.favoriteRecipe.ClientRecipeBookAccess;
 import xyz.water.rmatrix.cmod.craftguibelike.registry.RecipeBookTabRegistry;
 import xyz.water.rmatrix.cmod.craftguibelike.utils.CategoryDetector;
+import xyz.water.rmatrix.cmod.craftguibelike.utils.favoriteMiscUtils.ClientRecipeBookHelper;
 
 import java.util.*;
 
-public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCategoryAPI, IRecipeManager {
+public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCategoryAPI, IRecipeManager, IRecipeIdToDisplayEntryAdapt {
 
     private static EnhancedRecipeBookCategoryAPIImpl INSTANCE;
 
@@ -52,6 +57,8 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
     private final Map<Identifier, RecipeBookCategory> idToCategoryMap = new HashMap<>(); // 配方分类 id -> 配方分类
 
     private final Map<RecipeBookCategory, Text> categoryShowNameMap = new HashMap<>(); // 配方id -> 配方名称展示
+
+    private final Map<RecipeBookCategory, Set<RecipeDisplayEntry>> categoryDisplayEntries = new HashMap<>();
 
 
     private EnhancedRecipeBookCategoryAPIImpl(){}
@@ -72,6 +79,7 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
         RecipeBookCategory newCategory = Registry.register(Registries.RECIPE_BOOK_CATEGORY, identifier, new RecipeBookCategory());
         categoryRecipes.put(newCategory, new HashSet<>());
         idToCategoryMap.put(identifier, newCategory);
+        categoryDisplayEntries.put(newCategory, new HashSet<>());
 
         RecipeBookTabRegistry.register(newCategory, primaryIcon, secondaryIcon);
 
@@ -121,7 +129,7 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
         if(catId.isPresent()){
             RecipeBookCategory category = idToCategoryMap.get(catId.get());
             if(category != null){
-                categoryRecipes.get(category).add(recipeId);
+                categoryRecipes.computeIfAbsent(category, k -> new HashSet<>()).add(recipeId);
                 return category;
             }
         }
@@ -148,13 +156,14 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
 
     @Override
     public void refreshStorgeMap() {
-        if (MinecraftClient.getInstance().player == null) return;
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        if (player == null) return;
 
         for (var category : categoryRecipes.keySet()){
             categoryRecipes.get(category).clear();
         }
 
-        List<RecipeResultCollection> recipeResultCollections = MinecraftClient.getInstance().player.getRecipeBook().getOrderedResults();
+        List<RecipeResultCollection> recipeResultCollections = ClientRecipeBookHelper.getAllUnmergedRecipes(player);
 
         for(RecipeResultCollection collection : recipeResultCollections){
             for(var entry : collection.getAllRecipes()) {
@@ -167,9 +176,63 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
                 Identifier id = Registries.ITEM.getId(output.getItem());
                 var category = getCategoryFromRecipeId(id);
                 if (category == null) continue;
-                categoryRecipes.get(category).add(id);
+                categoryRecipes.computeIfAbsent(category, k -> new HashSet<>()).add(id);
             }
+        }
+        refreshClientDisplayEntries();
+
+        player.getRecipeBook().refresh();
+    }
+
+    @Override
+    public void refreshClientDisplayEntries() {
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        if (player == null) return;
+
+        for (var category : categoryDisplayEntries.keySet()){
+            categoryDisplayEntries.get(category).clear();
+        }
+
+        List<RecipeBookCategory> crafting = RecipeBookType.valueOf("CRAFTING").getCategories();
+        Collection<RecipeDisplayEntry> allEntries = ((ClientRecipeBookAccess)(player.getRecipeBook())).craftGui_BELike$getAllRecipes().values().stream()
+                .filter(entry -> crafting.contains(entry.category()))
+                .toList();
+
+        for(var entry : allEntries){
+            Optional<Identifier> optionalIdentifier = exactItemId(entry);
+            if(optionalIdentifier.isEmpty()) continue;
+            Identifier id = optionalIdentifier.get();
+            RecipeBookCategory category = getCategoryFromRecipeId(id);
+            if(category == null) continue;
+            categoryDisplayEntries.computeIfAbsent(category, k -> new HashSet<>()).add(entry);
         }
     }
 
+
+    @Override
+    public Set<RecipeDisplayEntry> getEntriesUnderCategory(RecipeBookCategory category) {
+        Set<RecipeDisplayEntry> recipes = categoryDisplayEntries.get(category);
+        return recipes != null ? Collections.unmodifiableSet(recipes) :
+                Collections.emptySet();
+    }
+
+
+    @Override
+    public boolean isEntirelyCustom(RecipeResultCollection collection) {
+        return collection.getAllRecipes().stream().allMatch(
+                entry -> {
+                    if(exactItemId(entry).isEmpty()) return true;
+                    Identifier identifier = exactItemId(entry).get();
+                    return isRegisteredCategory(getCategoryFromRecipeId(identifier));
+                }
+        );
+    }
+
+    private Optional<Identifier> exactItemId(RecipeDisplayEntry entry){
+        ClientWorld world = MinecraftClient.getInstance().world;
+        if(world == null) return Optional.empty();
+        List<ItemStack> stacks = entry.display().result().getStacks(SlotDisplayContexts.createParameters(world));
+        if(stacks.isEmpty()) return Optional.empty();
+        return Optional.of(Registries.ITEM.getId(stacks.getFirst().getItem()));
+    }
 }

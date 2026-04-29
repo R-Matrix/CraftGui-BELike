@@ -51,4 +51,17 @@ public class ClientRecipeBookHelper {
                 return collection1;
             })).collect(Collectors.toList());
     }
+
+    public static List<RecipeResultCollection> getAllUnmergedRecipes(ClientPlayerEntity player){
+        if(player == null) return null;
+        ClientRecipeBook recipeBook = player.getRecipeBook();
+        RecipeFinder finder = new RecipeFinder();
+        player.getInventory().populateRecipeFinder(finder);
+        return recipeBook.getOrderedResults().stream().flatMap(collection ->
+                collection.getAllRecipes().stream().map(entry -> {
+                    RecipeResultCollection collection1 = new RecipeResultCollection(List.of(entry));
+                    collection1.populateRecipes(finder, k -> true);
+                    return collection1;
+                })).collect(Collectors.toList());
+    }
 }
