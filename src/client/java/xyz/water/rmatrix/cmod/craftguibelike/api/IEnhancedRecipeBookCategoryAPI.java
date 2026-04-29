@@ -25,6 +25,7 @@ package xyz.water.rmatrix.cmod.craftguibelike.api;
 import net.minecraft.item.Item;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.book.RecipeBookGroup;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -60,4 +61,6 @@ public interface IEnhancedRecipeBookCategoryAPI {
     default Text getCategoryShowName(Identifier categoryId){
         return getCategoryShowName(getCategoryFromCategoryId(categoryId));
     }
+
+    void refreshStorgeMap();
 }

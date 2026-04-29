@@ -72,7 +72,7 @@ public abstract class RecipeBookWidgetMixin {
 
             if(apiImpl.isRegisteredCategory(id)){
 //                if(apiImpl.getRecipesUnderCategory(category).isEmpty()) return false;
-                System.out.println("is not empty");
+//                System.out.println("is not empty");
 //                instance.setPosition(customButton_i , customButton_j);
 //                instance.checkForNewRecipes(this.recipeBook, filteringCraftable);
                 instance.visible = true;

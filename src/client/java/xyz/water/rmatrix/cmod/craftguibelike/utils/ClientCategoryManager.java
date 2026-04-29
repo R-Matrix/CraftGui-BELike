@@ -30,6 +30,7 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELike;
+import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,10 +55,11 @@ public class ClientCategoryManager implements IdentifiableResourceReloadListener
         detector.clear();
         for(String modid : FabricLoader.getInstance().getAllMods()
                 .stream().map(mod -> mod.getMetadata().getId()).toList()){
-            Identifier configId = Identifier.of(modid, "recipe_categories.json");
+            Identifier configId = Identifier.of(modid, "recipe_categories/recipe_categories.json");
             Optional<Resource> resource = manager.getResource(configId);
             if(resource.isPresent()){
                 try(InputStream stream = resource.get().getInputStream()){
+                    detector.loadConfig(modid, stream, false);
                     LOGGER.info("Load recipe categories from {}", modid);
                 }
                 catch (IOException e){
@@ -67,12 +69,6 @@ public class ClientCategoryManager implements IdentifiableResourceReloadListener
         }
     }
 
-    /**
-     * 查询配方分类
-     */
-    public Optional<Identifier> getCategory(Identifier recipeId) {
-        return detector.getCategory(recipeId);
-    }
 
     @Override
     public Identifier getFabricId() {
@@ -81,16 +77,23 @@ public class ClientCategoryManager implements IdentifiableResourceReloadListener
 
     @Override
     public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
-        return CompletableFuture.runAsync(() -> reloadAllCategoryConfigs(manager), prepareExecutor).thenCompose(synchronizer::whenPrepared);
+        return CompletableFuture.runAsync(() -> {
+            reloadAllCategoryConfigs(manager);
+            var api = EnhancedRecipeBookCategoryAPIImpl.getINSTANCE();
+            api.refreshStorgeMap();
+        }, prepareExecutor).thenCompose(synchronizer::whenPrepared);
     }
 
+    /**
+     * 用于初始化加载平日放分类.
+     */
     public void loadAndRegisterAllCategories(){
         for(var mod : FabricLoader.getInstance().getAllMods()){
             String modId = mod.getMetadata().getId();
             Optional<Path> configPath = mod.findPath("assets/" + modId + "/recipe_categories/recipe_categories.json");
             if(configPath.isPresent()){
                 try (InputStream stream = Files.newInputStream(configPath.get())){
-                    detector.loadConfig(modId, stream);
+                    detector.loadConfig(modId, stream, true);
                 }
                 catch (Exception e){
                     LOGGER.error("Failed to load categories from mod: {}", modId, e);

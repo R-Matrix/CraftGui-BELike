@@ -47,7 +47,7 @@ public class CategoryDetector {
     private static final Map<Identifier, Identifier> categoryMapping = new HashMap<>();
     private static CategoryDetector INSTANCE;
 
-    public void loadConfig(String modId, InputStream configStream){
+    public void loadConfig(String modId, InputStream configStream, boolean isInitLoad){
         try {
             Gson gson = new Gson();
             JsonObject config = gson.fromJson(new InputStreamReader(configStream), JsonObject.class);
@@ -58,7 +58,10 @@ public class CategoryDetector {
             for (String categoryIdStr : categories.keySet()) {
                 JsonObject categoryData = categories.getAsJsonObject(categoryIdStr);
                 Identifier categoryId = Identifier.of(categoryIdStr);
-                registerCategoryFromConfig(categoryId, categoryData);
+
+                if(isInitLoad) {
+                    registerCategoryFromConfig(categoryId, categoryData);
+                }
 
                 if (categoryData.has("recipes")) {
                     for (var recipeElem : categoryData.getAsJsonArray("recipes")) {
@@ -87,7 +90,8 @@ public class CategoryDetector {
     }
 
     public void clear(){
-
+        categoryMapping.clear();
+        patternRules.clear();
     }
 
     /**

@@ -22,13 +22,18 @@
 
 package xyz.water.rmatrix.cmod.craftguibelike.api.impl;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.book.RecipeBookGroup;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.context.ContextParameterMap;
+import net.minecraft.util.context.ContextType;
 import org.jetbrains.annotations.Nullable;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IEnhancedRecipeBookCategoryAPI;
 import xyz.water.rmatrix.cmod.craftguibelike.api.IRecipeManager;
@@ -139,4 +144,28 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
 
         categoryShowNameMap.put(idToCategoryMap.get(categoryId), displayName);
     }
+
+    @Override
+    public void refreshStorgeMap() {
+        if (MinecraftClient.getInstance().player == null) return;
+
+        for (var category : categoryRecipes.keySet()){
+            categoryRecipes.get(category).clear();
+        }
+
+        List<RecipeResultCollection> recipeResultCollections = MinecraftClient.getInstance().player.getRecipeBook().getOrderedResults();
+
+        for(RecipeResultCollection collection : recipeResultCollections){
+            for(var entry : collection.getAllRecipes()){
+                ItemStack output = entry.display().result().getFirst(
+                        new ContextParameterMap.Builder().build(new ContextType.Builder().build()));
+                if(output == null) continue;
+                Identifier id = Registries.ITEM.getId(output.getItem());
+                var category = getCategoryFromRecipeId(id);
+                if(category == null) continue;
+                categoryRecipes.get(category).add(id);
+            }
+        }
+    }
+
 }
