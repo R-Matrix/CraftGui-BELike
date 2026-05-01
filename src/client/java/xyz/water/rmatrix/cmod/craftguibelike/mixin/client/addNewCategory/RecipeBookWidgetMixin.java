@@ -24,7 +24,6 @@ package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.addNewCategory;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 
 import net.minecraft.client.gui.screen.recipebook.RecipeGroupButtonWidget;
@@ -36,24 +35,31 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.water.rmatrix.cmod.craftguibelike.CraftGuiBELikeClient;
 import xyz.water.rmatrix.cmod.craftguibelike.api.impl.EnhancedRecipeBookCategoryAPIImpl;
+import xyz.water.rmatrix.cmod.craftguibelike.utils.favoriteMiscUtils.custom_buttonScaleFlagAccess;
 
 @Mixin(RecipeBookWidget.class)
 public abstract class RecipeBookWidgetMixin {
 
-    @Unique
-    private static final int customButton_k = 27; // tab按钮纵向间距
-    @Shadow
-    private int parentHeight;
-    @Shadow
-    private int leftOffset;
-    @Shadow
-    private int parentWidth;
+    @Unique private final int MAX_ROW_ICON = 6;
     @Shadow
     private ClientRecipeBook recipeBook;
-    @Unique
-    private int customButton_hasShownCount = 0; // 已显示的自定义按钮数量, 用于计算Y偏移
+    @Unique private int hasShownCustomButtons = 0;
+
+    @Shadow
+    protected abstract int getLeft();
+
+    @Shadow
+    protected abstract int getTop();
+
+    @Inject(method = "refreshTabButtons", at = @At("HEAD"))
+    private void resetUniqueNum(boolean filteringCraftable, CallbackInfo ci){
+        hasShownCustomButtons = 0;
+    }
+
 
     @WrapOperation(method = "refreshTabButtons", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/recipebook/RecipeGroupButtonWidget;hasKnownRecipes(Lnet/minecraft/client/recipebook/ClientRecipeBook;)Z"))
     private boolean setFavoriteDisplayAlways(
@@ -75,11 +81,14 @@ public abstract class RecipeBookWidgetMixin {
                     instance.visible = false;
                     return false;
                 }
-//                System.out.println("is not empty");
-//                instance.setPosition(customButton_i , customButton_j);
-//                instance.checkForNewRecipes(this.recipeBook, filteringCraftable);
                 instance.visible = true;
-                customButton_hasShownCount++;
+                int x = this.getLeft() - 5 + hasShownCustomButtons * 22;
+                int y = this.getTop() - 23;
+                instance.setPosition(x, y);
+                instance.checkForNewRecipes(this.recipeBook, filteringCraftable);
+                ((custom_buttonScaleFlagAccess)instance).craftGuiBELike$SetCustom_buttonScaleFlagAccess(true);
+                hasShownCustomButtons ++;
+
                 return false;
             }
         }

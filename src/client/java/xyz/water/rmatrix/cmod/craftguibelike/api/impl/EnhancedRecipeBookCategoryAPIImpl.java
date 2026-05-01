@@ -139,9 +139,9 @@ public class EnhancedRecipeBookCategoryAPIImpl implements IEnhancedRecipeBookCat
 
 
     @Override
-    public Text getCategoryShowName(RecipeBookCategory category) {
+    public Text getCategoryShowName(RecipeBookGroup category) {
         if(isRegisteredCategory(category)){
-            return categoryShowNameMap.get(category);
+            return categoryShowNameMap.get((RecipeBookCategory) category);
         }
         throw new RuntimeException("Recipe Category Not Found!");
     }

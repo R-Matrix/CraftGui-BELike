@@ -24,9 +24,6 @@ package xyz.water.rmatrix.cmod.craftguibelike.mixin.client.searchLogicRewrite;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeGroupButtonWidget;
@@ -61,8 +58,6 @@ public class RecipeBookWidgetMixin {
     private RecipeGroupButtonWidget currentTab;
 
 
-    //todo : fix me : 自定义分类不能使用搜索
-
     @Unique
     private SearchProvider<RecipeResultCollection> strictSearchProvider;
 
@@ -87,7 +82,6 @@ public class RecipeBookWidgetMixin {
 
         RecipeGroupButtonWidget currentTab1 = this.currentTab;
 
-        // todo : flag 启用严格搜索模式
         if (this.searchField == null) return false;
 
         PlayerEntity player = MinecraftClient.getInstance().player;

@@ -8,6 +8,7 @@
   "craftgui-belike.sort.vanilla_first_sort": "原版物品优先",
   "craftgui-belike.sort.mod_first_sort": "模组物品优先",
   "craftgui-belike.sort.pinyin_sort": "拼音顺序",
-  "craftgui-belike.sort.contain_group_sort": "保持组内的首字母排序"
+  "craftgui-belike.sort.contain_group_sort": "保持组内的首字母排序",
+  "craftgui-belike.category.magic": "魔法示例 I"
 
 }

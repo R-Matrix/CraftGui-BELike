@@ -8,5 +8,6 @@
   "craftgui-belike.sort.vanilla_first_sort": "vanilla_first_sort",
   "craftgui-belike.sort.mod_first_sort" : "mod_first_sort",
   "craftgui-belike.sort.pinyin_sort" : "pinyin_sort",
-  "craftgui-belike.sort.contain_group_sort": "contain_group_sort"
+  "craftgui-belike.sort.contain_group_sort": "contain_group_sort",
+  "craftgui-belike.category.magic": "magic I"
 }

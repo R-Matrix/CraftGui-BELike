@@ -5,7 +5,10 @@
   "client": [
     "ExampleClientMixin",
     "addNewCategory.AbstractCraftingRecipeBookWidgetMixin",
+    "addNewCategory.ClickableWidgetMixin",
     "addNewCategory.RecipeBookWidgetMixin",
+    "addNewCategory.RecipeGroupButtonWidgetMixin",
+    "addNewCategory.ToggleButtonWidgetMixin",
     "buttonsAddToRecipeBookResult.RecipeBookResultMixin",
     "customCategoryDisplayRecipes.ClientRecipeBookMixin",
     "favoriteRecipe.AnimatedResultButtonMixin",
